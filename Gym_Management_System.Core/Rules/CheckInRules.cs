@@ -1,9 +1,9 @@
-﻿using Gym_Managemnt_System_Core.Entities;
-using Gym_Managemnt_System_Core.Enums;
+﻿using GymManagementSystem.Core.Entities;
+using GymManagementSystem.Core.Enums;
 
 
 
-namespace Gym_Managemnt_System_Core.Rules
+namespace GymManagementSystem.Core.Rules
 {
     public static class CheckInRules
     {

@@ -1,4 +1,4 @@
-﻿using Gym_Managemnt_System_Core.Enums;
+﻿using GymManagementSystem.Core.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace GymManagementSystem.Api.Models

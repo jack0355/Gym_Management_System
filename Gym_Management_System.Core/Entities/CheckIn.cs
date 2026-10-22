@@ -1,5 +1,5 @@
-﻿using Gym_Managemnt_System_Core.Enums;
-namespace Gym_Managemnt_System_Core.Entities
+﻿using GymManagementSystem.Core.Enums;
+namespace GymManagementSystem.Core.Entities
 {
     public class CheckIn
     {

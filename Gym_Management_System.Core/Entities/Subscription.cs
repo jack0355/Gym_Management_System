@@ -1,6 +1,6 @@
 ﻿
 
-namespace Gym_Managemnt_System_Core.Entities
+namespace GymManagementSystem.Core.Entities
 {
     public class Subscription
     {

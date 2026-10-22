@@ -1,5 +1,5 @@
-﻿using Gym_Managemnt_System_Core.Enums;
-using Gym_Managemnt_System_Core.Rules;
+﻿using GymManagementSystem.Core.Enums;
+using GymManagementSystem.Core.Rules;
 using Microsoft.EntityFrameworkCore;
 using GymManagementSystem.Infrastructure;
 using GymManagementSystem.Core.Helpers;
@@ -47,7 +47,7 @@ public class CheckInService
 
         var result = CheckInRules.Decide(member.IsActive, subscription, totalPaid, planDays, today);
 
-        _db.CheckIns.Add(new Gym_Managemnt_System_Core.Entities.CheckIn { MemberId = member.Id, Result = result });
+        _db.CheckIns.Add(new GymManagementSystem.Core.Entities.CheckIn { MemberId = member.Id, Result = result });
         await _db.SaveChangesAsync();
 
 

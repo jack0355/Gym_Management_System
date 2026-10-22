@@ -1,6 +1,6 @@
-﻿using Gym_Managemnt_System_Core.Enums;
+﻿using GymManagementSystem.Core.Enums;
 
-namespace Gym_Managemnt_System_Core.Entities
+namespace GymManagementSystem.Core.Entities
 {
     public class Member
     {

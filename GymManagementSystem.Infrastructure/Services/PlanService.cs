@@ -1,4 +1,4 @@
-﻿using Gym_Managemnt_System_Core.Entities;
+﻿using GymManagementSystem.Core.Entities;
 using GymManagementSystem.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using System;

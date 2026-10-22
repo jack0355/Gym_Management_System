@@ -1,5 +1,5 @@
-﻿using Gym_Managemnt_System_Core.Enums;
-using Gym_Managemnt_System_Core.Entities;
+﻿using GymManagementSystem.Core.Enums;
+using GymManagementSystem.Core.Entities;
 
 
 

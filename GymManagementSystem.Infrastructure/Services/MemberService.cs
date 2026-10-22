@@ -1,6 +1,6 @@
-﻿using Gym_Managemnt_System_Core.Entities;
-using Gym_Managemnt_System_Core.Enums;
-using Gym_Managemnt_System_Core.Helpers;
+﻿using GymManagementSystem.Core.Entities;
+using GymManagementSystem.Core.Enums;
+using GymManagementSystem.Core.Helpers;
 using GymManagementSystem.Core.Models;
 using GymManagementSystem.Infrastructure;
 using Microsoft.EntityFrameworkCore;

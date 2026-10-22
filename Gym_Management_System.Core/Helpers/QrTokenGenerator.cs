@@ -1,6 +1,6 @@
 ﻿using System.Security.Cryptography;
 
-namespace Gym_Managemnt_System_Core.Helpers;
+namespace GymManagementSystem.Core.Helpers;
 
 public static class QrTokenGenerator
 {

@@ -10,12 +10,12 @@ namespace GymManagementSystem.Api.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize(Roles = "Owner")]
-    public class SubscriptionController : ControllerBase
+    public class SubscriptionsController : ControllerBase
     {
         private readonly SubscriptionService _subscription;
 
 
-        public SubscriptionController(SubscriptionService subscription)
+        public SubscriptionsController(SubscriptionService subscription)
         {
             _subscription = subscription;
         }

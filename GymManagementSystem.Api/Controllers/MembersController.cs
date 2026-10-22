@@ -8,10 +8,10 @@ namespace GymManagementSystem.Api.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize(Roles ="Owner")]
-    public class MembersControllers : ControllerBase
+    public class MembersController : ControllerBase
     {
         private readonly MemberService _members;
-        public MembersControllers(MemberService members)
+        public MembersController(MemberService members)
         {
             _members = members;
         }

@@ -7,12 +7,12 @@ namespace GymManagementSystem.Api.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    public class CheckInControllers : ControllerBase
+    public class CheckInController : ControllerBase
     {
         private readonly CheckInService _services;
 
 
-        public CheckInControllers(CheckInService services)
+        public CheckInController(CheckInService services)
         {
             _services = services;
         }

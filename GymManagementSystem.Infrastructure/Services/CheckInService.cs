@@ -21,7 +21,7 @@ public class CheckInService
     {
         var member = await _db.Members.FirstOrDefaultAsync(m => m.QrToken == qrToken);
         if (member is null)
-            return new CheckInResponse { Result = CheckInResult.Red, Message = "Unknown QR code" };
+            return new CheckInResponse { Result = CheckInResult.Red, MessageCode = CheckInMessage.UnknownQr  };
 
         var today = GymClock.Today();
 
@@ -58,11 +58,11 @@ public class CheckInService
             PlanName = subscription?.Plan.Name ?? string.Empty,
             EndDate = subscription?.EndDate,
             AmountOwed = owed,
-            Message = result switch
+            MessageCode = result switch
             {
-                CheckInResult.Green => "Welcome",
-                CheckInResult.Yellow => owed > 0 ? "Payment due" : "Subscription ends soon ",
-                _ => "Subscription not valid"
+                CheckInResult.Green => CheckInMessage.Welcome,
+                CheckInResult.Yellow => owed > 0 ? CheckInMessage.PaymentDue : CheckInMessage.EndingSoon,
+                _ => CheckInMessage.NotValid
             }
         };
     }

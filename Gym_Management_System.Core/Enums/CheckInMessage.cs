@@ -1,0 +1,1 @@
+﻿public enum CheckInMessage {Welcome = 1 , PaymentDue = 2 , EndingSoon = 3 , NotValid  = 4 , UnknownQr = 5}

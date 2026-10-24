@@ -21,7 +21,7 @@ public class CheckInService
     {
         var member = await _db.Members.FirstOrDefaultAsync(m => m.QrToken == qrToken);
         if (member is null)
-            return new CheckInResponse { Result = CheckInResult.Red, MessageCode = CheckInMessage.UnknownQr  };
+            return new CheckInResponse { Result = CheckInResult.Red, MessageCode = CheckInMessage.UnknownQr };
 
         var today = GymClock.Today();
 

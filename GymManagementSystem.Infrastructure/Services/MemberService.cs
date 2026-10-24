@@ -42,4 +42,12 @@ public class MemberService
     }
 
 
+    public async Task<string?> GetQrTokenAsync(int memberId)
+    {
+        return await _db.Members
+            .AsNoTracking()
+            .Where(m => m.Id == memberId)
+            .Select(m => m.QrToken)
+            .FirstOrDefaultAsync();
+    }
 }

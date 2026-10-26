@@ -1,0 +1,330 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>فحص دخول الأعضاء</title>
+    <style>
+        :root {
+            --bg: #0f1720;
+            --card: #17212c;
+            --text: #eef2f6;
+            --muted: #8fa0b3;
+            --line: #2a3846;
+            font-family: Tahoma, "Segoe UI", Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        main {
+            flex: 1;
+            width: 100%;
+            max-width: 520px;
+            margin: 0 auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 16px;
+        }
+
+        input, button {
+            font: inherit;
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid var(--line);
+            background: #0f1720;
+            color: var(--text);
+            margin-block-end: 10px;
+        }
+
+            input:focus {
+                outline: 2px solid #3b82f6;
+            }
+
+        button {
+            background: #3b82f6;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+            button.ghost {
+                background: transparent;
+                border: 1px solid var(--line);
+                width: auto;
+                margin: 0;
+                padding: 8px 14px;
+            }
+
+        .muted {
+            color: var(--muted);
+            font-size: .9rem;
+            margin: 0 0 8px;
+        }
+
+        .error {
+            color: #f87171;
+            margin: 0;
+        }
+
+        #reader {
+            border-radius: 14px;
+            overflow: hidden;
+            margin-block-end: 10px;
+        }
+
+            #reader:empty {
+                display: none;
+            }
+
+        .panel {
+            flex: 1;
+            min-height: 42vh;
+            border-radius: 22px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 24px;
+            background: var(--card);
+            border: 1px solid var(--line);
+            transition: background .2s;
+        }
+
+            .panel.Green {
+                background: #16a34a;
+                color: #fff;
+                border-color: transparent;
+            }
+
+            .panel.Yellow {
+                background: #facc15;
+                color: #1b1f24;
+                border-color: transparent;
+            }
+
+            .panel.Red {
+                background: #dc2626;
+                color: #fff;
+                border-color: transparent;
+            }
+
+        #icon {
+            font-size: 4.5rem;
+            line-height: 1;
+        }
+
+        #message {
+            font-size: 2.1rem;
+            font-weight: bold;
+            margin-block-start: 8px;
+        }
+
+        #name {
+            font-size: 1.6rem;
+            margin-block-start: 14px;
+        }
+
+        #details {
+            font-size: 1.1rem;
+            margin-block-start: 8px;
+            opacity: .9;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <strong>نادي اللياقة · فحص الدخول</strong>
+        <button id="logout" class="ghost hidden">خروج</button>
+    </header>
+    <main>
+        <section id="login" class="card">
+            <input id="user" placeholder="اسم المستخدم" autocomplete="username">
+            <input id="pass" type="password" placeholder="كلمة المرور" autocomplete="current-password">
+            <button id="loginBtn">دخول</button>
+            <p id="loginError" class="error"></p>
+        </section>
+
+        <section id="scanner" class="card hidden">
+            <div id="reader"></div>
+            <button id="camBtn">تشغيل الكاميرا</button>
+            <p id="notice" class="muted"></p>
+            <input id="token" placeholder="أو امسح الرمز بالقارئ هنا" autocomplete="off" inputmode="none">
+        </section>
+
+        <div id="result" class="panel hidden">
+            <div id="icon"></div>
+            <div id="message"></div>
+            <div id="name"></div>
+            <div id="details"></div>
+        </div>
+    </main>
+
+    <script src="/html5-qrcode.min.js"></script>
+    <script>
+        const MESSAGES = {
+            Welcome: 'أهلاً بك',
+            PaymentDue: 'يجب الدفع',
+            EndingSoon: 'الاشتراك ينتهي قريباً',
+            NotValid: 'الاشتراك غير صالح',
+            UnknownQr: 'الرمز غير معروف'
+        };
+        const ICONS = { Green: '✓', Yellow: '!', Red: '✕' };
+
+        const $ = id => document.getElementById(id);
+        const getToken = () => sessionStorage.getItem('jwt');
+        let busy = false, resetTimer, qr = null, lastText = '', lastAt = 0;
+
+        function render() {
+            const loggedIn = !!getToken();
+            $('login').classList.toggle('hidden', loggedIn);
+            $('scanner').classList.toggle('hidden', !loggedIn);
+            $('result').classList.toggle('hidden', !loggedIn);
+            $('logout').classList.toggle('hidden', !loggedIn);
+            if (loggedIn) { idle(); $('token').focus(); }
+        }
+
+        function idle() {
+            $('result').className = 'panel';
+            $('icon').textContent = '';
+            $('message').textContent = 'جاهز للمسح';
+            $('name').textContent = '';
+            $('details').textContent = '';
+        }
+
+        async function login() {
+            $('loginError').textContent = '';
+            try {
+                const res = await fetch('/api/Auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userName: $('user').value, password: $('pass').value })
+                });
+                if (!res.ok) { $('loginError').textContent = 'اسم المستخدم أو كلمة المرور غير صحيحة'; return; }
+                sessionStorage.setItem('jwt', (await res.json()).token);
+                $('pass').value = '';
+                render();
+            } catch {
+                $('loginError').textContent = 'تعذر الاتصال بالخادم';
+            }
+        }
+
+        async function logout() {
+            await stopCamera();
+            sessionStorage.removeItem('jwt');
+            render();
+        }
+
+        async function scan(qrToken) {
+            if (busy || !qrToken) return;
+            busy = true;
+            try {
+                const res = await fetch('/api/CheckIns/scan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
+                    body: JSON.stringify({ qrToken })
+                });
+                if (res.status === 401) { await logout(); return; }
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                show(await res.json());
+            } catch {
+
+                $('result').className = 'panel';
+                $('icon').textContent = '';
+                $('message').textContent = String(message).startsWith('HTTP') ? 'خطأ في الخادم' : 'تعذر الاتصال بالخادم';
+                $('name').textContent = '';
+                $('details').textContent = '';
+            } finally {
+                busy = false;
+                $('token').value = '';
+                if (!qr) $('token').focus();
+            }
+        }
+
+        function show(d) {
+            $('result').className = 'panel ' + d.result;
+            $('icon').textContent = ICONS[d.result] ?? '';
+            $('message').textContent = MESSAGES[d.messageCode] ?? '';
+            $('name').textContent = d.memberName;
+            const parts = [];
+            if (d.planName) parts.push(d.planName);
+            if (d.endDate) {
+                const date = new Date(d.endDate + 'T00:00:00');
+                parts.push('ينتهي: ' + date.toLocaleDateString('ar-SY-u-nu-latn', { day: 'numeric', month: 'long', year: 'numeric' }));
+            }
+            if (d.amountOwed > 0) parts.push('المتبقي: ' + d.amountOwed);
+            $('details').textContent = parts.join(' • ');
+            if (navigator.vibrate) navigator.vibrate(d.result === 'Green' ? 80 : [120, 60, 120]);
+            clearTimeout(resetTimer);
+            resetTimer = setTimeout(idle, 6000);
+        }
+
+        function onCode(text) {
+            const now = Date.now();
+            if (text === lastText && now - lastAt < 5000) return;
+            lastText = text; lastAt = now;
+            scan(text.trim());
+        }
+
+        async function startCamera() {
+            $('notice').textContent = '';
+            if (!window.Html5Qrcode) { $('notice').textContent = 'مكتبة الكاميرا غير محملة'; return; }
+            qr = new Html5Qrcode('reader');
+            try {
+                await qr.start({ facingMode: 'environment' }, { fps: 10, qrbox: { width: 240, height: 240 } }, onCode, () => { });
+                $('camBtn').textContent = 'إيقاف الكاميرا';
+            } catch (err) {
+                console.error('camera failed:', err);
+                $('notice').textContent = 'تعذر تشغيل الكاميرا: تحقق من الصلاحيات ومن استخدام https';
+                qr = null;
+            }
+        }
+
+        async function stopCamera() {
+            if (!qr) return;
+            try { await qr.stop(); qr.clear(); } catch { }
+            qr = null;
+            $('camBtn').textContent = 'تشغيل الكاميرا';
+        }
+
+        $('loginBtn').addEventListener('click', login);
+        $('pass').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+        $('token').addEventListener('keydown', e => { if (e.key === 'Enter') scan($('token').value.trim()); });
+        $('camBtn').addEventListener('click', () => qr ? stopCamera() : startCamera());
+        $('logout').addEventListener('click', logout);
+        render();
+    </script>
+</body>
+</html>

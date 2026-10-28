@@ -3,13 +3,12 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>نظام إدارة وفحص الأعضاء الذكي</title>
+    <title>نظام إدارة اللياقة · بوابة الفحص الذكي</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-base: #060911;
             --surface: #0f172a;
-            --surface-card: #1e293b;
             --border: #334155;
             --border-focus: #3b82f6;
             --text-main: #f8fafc;
@@ -26,7 +25,7 @@
 
         * {
             box-sizing: border-box;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.25s ease;
         }
 
         body {
@@ -36,7 +35,6 @@
             color: var(--text-main);
             display: flex;
             flex-direction: column;
-            background-image: radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.07) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 40%);
         }
 
         header {
@@ -67,13 +65,11 @@
             align-items: center;
             justify-content: center;
             font-size: 1.2rem;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
 
         header strong {
             font-size: 1.25rem;
             font-weight: 800;
-            letter-spacing: -0.3px;
             background: linear-gradient(135deg, #60a5fa, #3b82f6);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -115,7 +111,7 @@
             border: 1px solid var(--border);
             border-radius: var(--radius-lg);
             padding: 32px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
         }
 
         .card-title {
@@ -123,7 +119,6 @@
             font-weight: 700;
             margin-top: 0;
             margin-bottom: 20px;
-            color: var(--text-main);
             display: flex;
             align-items: center;
             gap: 10px;
@@ -139,11 +134,6 @@
             color: var(--text-main);
             margin-block-end: 16px;
         }
-
-            input::placeholder {
-                color: var(--text-muted);
-                opacity: 0.6;
-            }
 
             input:focus {
                 outline: none;
@@ -164,25 +154,20 @@
                 transform: translateY(-1px);
             }
 
-            button:active {
-                transform: translateY(0);
-            }
-
             button.ghost {
                 background: transparent;
                 border: 1px solid var(--border);
                 width: auto;
                 margin: 0;
                 padding: 8px 18px;
-                box-shadow: none;
                 font-size: 0.92rem;
                 color: var(--text-muted);
+                box-shadow: none;
             }
 
                 button.ghost:hover {
                     background: rgba(255, 255, 255, 0.05);
                     color: var(--text-main);
-                    border-color: var(--text-muted);
                 }
 
         .muted {
@@ -234,7 +219,6 @@
             padding: 40px 30px;
             background: var(--surface);
             border: 1px solid var(--border);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             min-height: 100%;
         }
 
@@ -242,64 +226,128 @@
                 background: linear-gradient(135deg, #064e3b, #047857);
                 color: #fff;
                 border-color: #10b981;
-                box-shadow: 0 20px 40px rgba(16, 185, 129, 0.3);
             }
 
             .panel.Yellow {
                 background: linear-gradient(135deg, #78350f, #b45309);
                 color: #fff;
                 border-color: #f59e0b;
-                box-shadow: 0 20px 40px rgba(245, 158, 11, 0.3);
             }
 
             .panel.Red {
                 background: linear-gradient(135deg, #7f1d1d, #b91c1c);
                 color: #fff;
                 border-color: #ef4444;
-                box-shadow: 0 20px 40px rgba(239, 68, 68, 0.3);
             }
 
         #icon {
             font-size: 5.5rem;
             line-height: 1;
             margin-bottom: 16px;
-            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
         }
 
         #message {
             font-size: 2.4rem;
             font-weight: 900;
             margin-block-start: 8px;
-            letter-spacing: -0.5px;
         }
 
         #name {
             font-size: 1.7rem;
             font-weight: 700;
             margin-block-start: 16px;
-            opacity: 0.98;
         }
 
         #details {
             font-size: 1.15rem;
             margin-block-start: 12px;
             opacity: .92;
-            font-weight: 500;
             line-height: 1.6;
+            white-space: pre-line;
         }
+
+        .facts {
+            display: grid;
+            gap: 10px;
+            width: 100%;
+            max-width: 420px;
+            margin-block-start: 18px;
+        }
+
+        .fact {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,.12);
+            border-radius: 12px;
+            padding: 10px 14px;
+            text-align: start;
+        }
+
+            .fact .ic {
+                font-size: 1.5rem;
+                width: 2rem;
+                text-align: center;
+            }
+
+            .fact .lb {
+                display: block;
+                opacity: .75;
+                font-size: .85rem;
+            }
+
+            .fact strong {
+                font-size: 1.15rem;
+            }
 
         .hidden {
             display: none !important;
         }
+
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        button.nav-add-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            width: auto;
+            margin: 0;
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #fff;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            button.nav-add-btn:hover {
+                background: linear-gradient(135deg, #059669, #047857);
+                transform: translateY(-1px);
+            }
     </style>
 </head>
 <body>
     <header>
         <div class="logo-area">
             <div class="logo-icon">⚡</div>
-            <strong>نظام إدارة اللياقة · بوابة الدخول</strong>
+            <strong>نظام إدارة نادي اوسكار · بوابة الفحص</strong>
         </div>
-        <button id="logout" class="ghost hidden">تسجيل خروج</button>
+
+        <div class="header-actions">
+
+            <button id="navAddMember" class="nav-add-btn hidden" onclick="location.href='add-member.html'">➕ إضافة عضو جديد</button>
+            <button id="logout" class="ghost hidden">
+                تسجيل خروج
+            </button>
+        </div>
     </header>
     <main>
         <section id="login" class="card auth-container">
@@ -324,21 +372,15 @@
                 <div id="message">جاهز للمسح</div>
                 <div id="name"></div>
                 <div id="details">قم بتوجيه الكاميرا نحو رمز العضو أو أدخل الرمز يدوياً للتحقق من حالة الاشتراك</div>
+                <div id="facts" class="facts"></div>
             </div>
         </div>
     </main>
 
     <script src="/html5-qrcode.min.js"></script>
     <script>
-        const MESSAGES = {
-            Welcome: 'أهلاً بك',
-            PaymentDue: 'يجب الدفع',
-            EndingSoon: 'الاشتراك ينتهي قريباً',
-            NotValid: 'الاشتراك غير صالح',
-            UnknownQr: 'الرمز غير معروف'
-        };
+        const MESSAGES = { Welcome: 'أهلاً بك', PaymentDue: 'يجب الدفع', EndingSoon: 'الاشتراك ينتهي قريباً', NotValid: 'الاشتراك غير صالح', UnknownQr: 'الرمز غير معروف' };
         const ICONS = { Green: '✓', Yellow: '!', Red: '✕' };
-
         const $ = id => document.getElementById(id);
         const getToken = () => sessionStorage.getItem('jwt');
         let busy = false, resetTimer, qr = null, lastText = '', lastAt = 0;
@@ -348,6 +390,7 @@
             $('login').classList.toggle('hidden', loggedIn);
             $('scannerWrapper').classList.toggle('hidden', !loggedIn);
             $('logout').classList.toggle('hidden', !loggedIn);
+            $('navAddMember').classList.toggle('hidden', !loggedIn);
             if (loggedIn) { idle(); $('token').focus(); }
         }
 
@@ -357,6 +400,26 @@
             $('message').textContent = 'جاهز للمسح';
             $('name').textContent = '';
             $('details').textContent = 'قم بتوجيه الكاميرا نحو رمز العضو أو أدخل الرمز يدوياً للتحقق من حالة الاشتراك';
+            $('facts').innerHTML = '';
+        }
+
+        function addFact(icon, label, value) {
+            const row = document.createElement('div');
+            row.className = 'fact';
+            const ic = document.createElement('span');
+            ic.className = 'ic';
+            ic.textContent = icon;
+            const box = document.createElement('div');
+            const lb = document.createElement('span');
+            lb.className = 'lb';
+            lb.textContent = label;
+            const val = document.createElement('strong');
+            val.textContent = value;
+            box.appendChild(lb);
+            box.appendChild(val);
+            row.appendChild(ic);
+            row.appendChild(box);
+            $('facts').appendChild(row);
         }
 
         async function login() {
@@ -371,9 +434,7 @@
                 sessionStorage.setItem('jwt', (await res.json()).token);
                 $('pass').value = '';
                 render();
-            } catch (err) {
-                $('loginError').textContent = 'تعذر الاتصال بالخادم';
-            }
+            } catch (err) { $('loginError').textContent = 'تعذر الاتصال بالخادم'; }
         }
 
         async function logout() {
@@ -395,11 +456,13 @@
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 show(await res.json());
             } catch (err) {
-                $('result').className = 'panel Red';
-                $('icon').textContent = ICONS['Red'];
-                $('message').textContent = 'خطأ في الاتصال';
+                console.error('scan failed:', err);
+                $('result').className = 'panel';
+                $('icon').textContent = '⚠';
+                $('message').textContent = 'تعذر الاتصال بالخادم';
                 $('name').textContent = '';
-                $('details').textContent = 'تعذر معالجة طلب الفحص مع الخادم';
+                $('details').textContent = 'أعد المحاولة، ولا ترفض العضو بسبب هذا الخطأ';
+                $('facts').innerHTML = '';
             } finally {
                 busy = false;
                 $('token').value = '';
@@ -408,68 +471,60 @@
         }
 
         function show(d) {
-            $('result').className = 'panel ' + (d.result || 'Red');
-            $('icon').textContent = ICONS[d.result] ?? '✕';
-            $('message').textContent = MESSAGES[d.messageCode] ?? d.messageCode ?? 'نتيجة الفحص';
+            const status = d.result || 'Red';
+            const fmt = iso => new Date(iso + 'T00:00:00')
+                .toLocaleDateString('ar-SY-u-nu-latn', { day: 'numeric', month: 'long', year: 'numeric' });
+
+            $('result').className = 'panel ' + status;
+            $('icon').textContent = ICONS[status] || '✕';
+            $('message').textContent = MESSAGES[d.messageCode] || 'نتيجة الفحص';
             $('name').textContent = d.memberName || '';
-            const parts = [];
-            if (d.planName) parts.push(d.planName);
-            if (d.endDate) {
-                const date = new Date(d.endDate + 'T00:00:00');
-                parts.push('ينتهي: ' + date.toLocaleDateString('ar-SA', { day: 'numeric', month: 'long', year: 'numeric' }));
+            $('facts').innerHTML = '';
+
+            if (d.planName) {
+                $('details').textContent = '';
+                addFact('📋', 'الاشتراك', d.planName);
+                addFact('⏳', 'المدة', d.planDays === 1 ? 'يومي' : d.planDays + ' يوم');
+                addFact('🏋️', 'التدريب', d.withCoach ? 'مع مدرب' : 'بدون مدرب');
+                if (d.coachName) addFact('👤', 'المدرب', d.coachName);
+                addFact('📝', 'البرنامج', d.withProgram ? 'مع برنامج' : 'بدون برنامج');
+                addFact('📅', 'تاريخ البداية', fmt(d.startDate));
+                addFact('🏁', 'تاريخ الانتهاء', fmt(d.endDate));
+                addFact('💵', 'الدفع', d.amountOwed > 0 ? 'المتبقي: ' + d.amountOwed : 'مدفوع بالكامل');
+            } else {
+                $('details').textContent = d.memberName ? 'لا يوجد اشتراك ساري حالياً' : '';
             }
-            if (d.amountOwed > 0) parts.push('المتبقي: ' + d.amountOwed);
-            $('details').textContent = parts.join(' • ');
-            if (navigator.vibrate) navigator.vibrate(d.result === 'Green' ? 80 : [120, 60, 120]);
+
+            if (navigator.vibrate) navigator.vibrate(status === 'Green' ? 80 : [120, 60, 120]);
             clearTimeout(resetTimer);
             resetTimer = setTimeout(idle, 10000);
         }
 
         function onCode(text) {
             const now = Date.now();
-            if (text === lastText && now - lastAt < 3000) return;
+            if (text === lastText && now - lastAt < 10000) return;
             lastText = text; lastAt = now;
             scan(text.trim());
         }
 
         async function startCamera() {
             $('notice').textContent = '';
-            if (!window.Html5Qrcode) {
-                $('notice').textContent = 'مكتبة الكاميرا غير محملة';
-                return;
-            }
-
+            if (!window.Html5Qrcode) { $('notice').textContent = 'مكتبة الكاميرا غير محملة'; return; }
             try {
-                if (!qr) {
-                    qr = new Html5Qrcode('reader');
-                }
-                if (qr.isScanning) {
-                    return;
-                }
-
-                await qr.start(
-                    { facingMode: 'environment' },
-                    { fps: 15, qrbox: { width: 250, height: 250 } },
-                    onCode,
-                    () => { }
-                );
+                if (!qr) qr = new Html5Qrcode('reader');
+                if (qr.isScanning) return;
+                await qr.start({ facingMode: 'environment' }, { fps: 15, qrbox: { width: 250, height: 250 } }, onCode, () => { });
                 $('camBtn').textContent = 'إيقاف الكاميرا';
             } catch (err) {
-                $('notice').textContent = 'تعذر تشغيل الكاميرا، تأكد من أذونات المتصفح ومتصفح آمن';
+                console.error('camera failed:', err);
+                $('notice').textContent = 'تعذر تشغيل الكاميرا';
                 qr = null;
             }
         }
 
         async function stopCamera() {
             if (!qr) return;
-            try {
-                if (qr.isScanning) {
-                    await qr.stop();
-                }
-                await qr.clear();
-            } catch (err) {
-                console.error(err);
-            }
+            try { if (qr.isScanning) await qr.stop(); await qr.clear(); } catch (e) { }
             qr = null;
             $('camBtn').textContent = 'تشغيل كاميرا المسح';
         }

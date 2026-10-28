@@ -26,7 +26,7 @@ namespace GymManagementSystem.Api.Controllers
         {
             int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-            var (subscription, Error) = await _subscription.CreateAsync(subscriptionRequest.MemberId, subscriptionRequest.PlandId, userId);
+            var (subscription, Error) = await _subscription.CreateAsync(subscriptionRequest.MemberId, subscriptionRequest.PlandId, userId, subscriptionRequest.CoachId, subscriptionRequest.WithProgram);
 
             if (Error is not null) return BadRequest(Error);
             return Ok(subscription);

@@ -70,8 +70,10 @@ builder.Services.AddScoped<SubscriptionService>();
 
 builder.Services.AddScoped<PaymentService>();
 
-builder.Services.AddAuthorization();
 
+builder.Services.AddScoped<CoachService>();
+
+builder.Services.AddAuthorization();
 
 
 

@@ -26,6 +26,11 @@ namespace GymManagementSystem.Core.Entities
         public int CreatedByUserId { get; set; }
 
         public User CreatedBy { get; set; } = null!;
+
+
+        public bool WithProgram { get; set; }
+        public int? CoachId { get; set; }
+        public Coach? Coach { get; set; }
     }
 
 }

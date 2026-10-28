@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace GymManagementSystem.Core.Models
 {
-    public record PlanResponse(int Id, string Name, int DurationInDays, decimal Price, bool WithCoach);
+    public record PlanResponse(int Id, string Name, int DurationInDays, decimal Price, bool WithCoach , decimal ProgramPrice);
 }

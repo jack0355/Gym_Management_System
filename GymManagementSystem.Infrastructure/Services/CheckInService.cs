@@ -3,6 +3,7 @@ using GymManagementSystem.Core.Rules;
 using Microsoft.EntityFrameworkCore;
 using GymManagementSystem.Infrastructure;
 using GymManagementSystem.Core.Helpers;
+using GymManagementSystem.Core.Entities;
 
 public class CheckInService
 {
@@ -29,6 +30,7 @@ public class CheckInService
         var subscription = await _db.Subscriptions
             .Include(s => s.Plan)
             .Include(s => s.Payments)
+            .Include(s => s.Coach)
             .Where(s => s.MemberId == member.Id && s.StartDate <= today && s.EndDate >= today)
             .OrderByDescending(s => s.EndDate)
             .FirstOrDefaultAsync();
@@ -56,7 +58,13 @@ public class CheckInService
             Result = result,
             MemberName = member.FullName,
             PlanName = subscription?.Plan.Name ?? string.Empty,
+            StartDate = subscription?.StartDate,
             EndDate = subscription?.EndDate,
+            WithCoach = subscription?.Plan.WithCoach,
+            planDays = subscription?.Plan.DurationInDays,
+           
+            CoachName = subscription?.Coach?.Name,
+            WithProgram = subscription?.WithProgram,
             AmountOwed = owed,
             MessageCode = result switch
             {

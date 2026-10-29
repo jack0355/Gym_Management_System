@@ -78,7 +78,8 @@ public class CheckInService
 
     public async Task<object> GetLogsByDateAsync(DateTime date)
     {
-        var start = date.Date;
+        var utcDate = DateTime.SpecifyKind(date.Date, DateTimeKind.Utc);
+        var start = utcDate;
         var end = start.AddDays(1);
 
         var checkIns = await _db.CheckIns

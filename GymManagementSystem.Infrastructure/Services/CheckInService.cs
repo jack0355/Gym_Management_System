@@ -62,7 +62,7 @@ public class CheckInService
             EndDate = subscription?.EndDate,
             WithCoach = subscription?.Plan.WithCoach,
             planDays = subscription?.Plan.DurationInDays,
-           
+
             CoachName = subscription?.Coach?.Name,
             WithProgram = subscription?.WithProgram,
             AmountOwed = owed,
@@ -74,4 +74,67 @@ public class CheckInService
             }
         };
     }
+
+
+    public async Task<object> GetLogsByDateAsync(DateTime date)
+    {
+        var start = date.Date;
+        var end = start.AddDays(1);
+
+        var checkIns = await _db.CheckIns
+            .Include(c => c.Member)
+                .ThenInclude(m => m.Subscriptions)
+                    .ThenInclude(s => s.Plan)
+            .Include(c => c.Member)
+                .ThenInclude(m => m.Subscriptions)
+                    .ThenInclude(s => s.Payments)
+            .Include(c => c.Member)
+                .ThenInclude(m => m.Subscriptions)
+                    .ThenInclude(s => s.Coach)
+            .Where(c => c.CheckedInAtUtc >= start && c.CheckedInAtUtc < end)
+            .OrderByDescending(c => c.CheckedInAtUtc)
+            .ToListAsync();
+
+        var logs = checkIns.Select(c =>
+        {
+            if (c.Member == null || c.Member.Subscriptions == null)
+            {
+                return new
+                {
+                    memberName = "عضو غير معروف",
+                    checkInTime = c.CheckedInAtUtc,
+                    result = c.Result.ToString(),
+                    planName = "بدون اشتراك",
+                    withCoach = (bool?)null,
+                    coachName = (string?)null,
+                    amountOwed = 0m
+                };
+            }
+
+            var checkInDateOnly = DateOnly.FromDateTime(c.CheckedInAtUtc);
+
+            var activeSub = c.Member.Subscriptions
+                .Where(s => s.StartDate <= checkInDateOnly && s.EndDate >= checkInDateOnly)
+                .OrderByDescending(s => s.EndDate)
+                .FirstOrDefault();
+
+            decimal totalPaid = activeSub?.Payments != null ? activeSub.Payments.Sum(p => p.Amount) : 0m;
+            decimal owed = activeSub is null ? 0m : Math.Max(0m, activeSub.PriceCharged - totalPaid);
+
+            return new
+            {
+                memberName = c.Member.FullName,
+                checkInTime = c.CheckedInAtUtc,
+                result = c.Result.ToString(),
+                planName = activeSub?.Plan?.Name ?? "بدون اشتراك",
+                withCoach = activeSub?.Plan?.WithCoach,
+                coachName = activeSub?.Coach?.Name,
+                amountOwed = owed
+            };
+        }).ToList();
+
+        return logs;
+    }
+
+
 }

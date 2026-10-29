@@ -12,14 +12,16 @@ public class CheckInResponse
 
     public string PlanName { get; set; } = string.Empty;
 
+    public DateOnly? StartDate { get; set; }
     public DateOnly? EndDate { get; set; }
+
+
 
     public decimal AmountOwed { get; set; }
 
-    public DateOnly? StartDate { get; set; }
+
 
     public string? CoachName { get; set; }
-
     public int? planDays { get; set; }
     public bool? WithProgram { get; set; }
     public bool? WithCoach { get; set; }

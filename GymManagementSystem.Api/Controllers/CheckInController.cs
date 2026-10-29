@@ -30,6 +30,12 @@ namespace GymManagementSystem.Api.Controllers
             return Ok(response);
         }
 
+        [HttpGet("logs")]
+        public async Task<IActionResult> GetLogs([FromQuery] DateTime date)
+        {
+            var logs = await _services.GetLogsByDateAsync(date);
+            return Ok(logs);
+        }
 
     }
 

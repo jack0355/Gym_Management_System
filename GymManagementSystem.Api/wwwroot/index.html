@@ -332,6 +332,28 @@
                 background: linear-gradient(135deg, #059669, #047857);
                 transform: translateY(-1px);
             }
+
+        button.nav-history-btn {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border: none;
+            width: auto;
+            margin: 0;
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #fff;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            button.nav-history-btn:hover {
+                background: linear-gradient(135deg, #1d4ed8, #1e40af);
+                transform: translateY(-1px);
+            }
     </style>
 </head>
 <body>
@@ -342,7 +364,7 @@
         </div>
 
         <div class="header-actions">
-
+            <button id="navHistory" class="nav-history-btn hidden" onclick="location.href='checkin-history.html'">📊 سجل الحضور</button>
             <button id="navAddMember" class="nav-add-btn hidden" onclick="location.href='add-member.html'">➕ إضافة عضو جديد</button>
             <button id="logout" class="ghost hidden">
                 تسجيل خروج
@@ -390,6 +412,7 @@
             $('login').classList.toggle('hidden', loggedIn);
             $('scannerWrapper').classList.toggle('hidden', !loggedIn);
             $('logout').classList.toggle('hidden', !loggedIn);
+            $('navHistory').classList.toggle('hidden', !loggedIn);
             $('navAddMember').classList.toggle('hidden', !loggedIn);
             if (loggedIn) { idle(); $('token').focus(); }
         }

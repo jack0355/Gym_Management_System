@@ -22,7 +22,7 @@ namespace GymManagementSystem.Infrastructure.Services
                 .AsNoTracking()
                 .Where(c => c.IsActive)
                 .OrderBy(c => c.Name)
-                .Select(c => new CoachResponse(c.Id, c.Name))
+                .Select(c => new CoachResponse(c.Id, c.Name ,c.gender))
                 .ToListAsync();
         }
 

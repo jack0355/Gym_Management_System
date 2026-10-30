@@ -67,6 +67,9 @@ namespace GymManagementSystem.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<int>("gender")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.ToTable("Coaches");

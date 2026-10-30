@@ -389,6 +389,17 @@
             }
         }
 
+
+        function fillcoahces() {
+            const gender = $('memberGender').value;
+            const select = $('memberCoach');
+            select.innerHTML = '';
+            select.appendChild(new Option('اختر المدرب', ''));
+            coaches
+                .filter(function (c) { return c.gender === gender; })
+                .forEach(function (c) { select.appendChild(new option(c.name, c, id)); });
+        }
+
         async function explain(name, res) {
             let text = '';
             try { text = await res.text(); } catch (e) { }
@@ -404,6 +415,7 @@
                 ['no coach', 'هذا الاشتراك بدون مدرب'],
                 ['Program is not available', 'البرنامج غير متاح لهذا الاشتراك'],
                 ['more than what is owed', 'المبلغ أكبر من المطلوب']
+                ['same gender', 'يجب أن يكون المدرب من نفس جنس العضو'],
             ];
             for (let i = 0; i < known.length; i++) {
                 if (text.indexOf(known[i][0]) !== -1) { return known[i][1]; }
@@ -487,6 +499,8 @@
                 return;
             }
 
+
+            $('memberGender').addEventListener('Change', fillcoahces);
             $('saveBtn').disabled = true;
             try {
                 if (!reg.member) {

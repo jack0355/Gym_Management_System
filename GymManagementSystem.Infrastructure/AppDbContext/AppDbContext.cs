@@ -81,6 +81,11 @@ namespace GymManagementSystem.Infrastructure
                 .HasForeignKey(s => s.CoachId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<CheckIn>()
+                .HasOne(c => c.Subscription).WithMany()
+                .HasForeignKey(c => c.SubscriptionId)
+                .OnDelete(DeleteBehavior.Restrict);
+
 
         }
     }

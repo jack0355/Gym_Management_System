@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GymManagementSystem.Core.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,8 @@ namespace GymManagementSystem.Core.Entities
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
-
         public bool IsActive { get; set; } = true;
+
+        public Gender gender { get; set; }
     }
 }

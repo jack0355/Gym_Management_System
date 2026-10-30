@@ -3,8 +3,7 @@ using GymManagementSystem.Core.Rules;
 using Microsoft.EntityFrameworkCore;
 using GymManagementSystem.Infrastructure;
 using GymManagementSystem.Core.Helpers;
-using GymManagementSystem.Core.Entities;
-
+using GymManagementSystem.Core.Models;
 public class CheckInService
 {
 
@@ -49,7 +48,12 @@ public class CheckInService
 
         var result = CheckInRules.Decide(member.IsActive, subscription, totalPaid, planDays, today);
 
-        _db.CheckIns.Add(new GymManagementSystem.Core.Entities.CheckIn { MemberId = member.Id, Result = result });
+        _db.CheckIns.Add(new GymManagementSystem.Core.Entities.CheckIn
+        {
+            MemberId = member.Id,
+            Result = result,
+            SubscriptionId = subscription?.Id
+        });
         await _db.SaveChangesAsync();
 
 
@@ -76,65 +80,27 @@ public class CheckInService
     }
 
 
-    public async Task<object> GetLogsByDateAsync(DateTime date)
+    public async Task<List<CheckInLogItem>> GetLogsByDateAsync(DateOnly day)
     {
-        var utcDate = DateTime.SpecifyKind(date.Date, DateTimeKind.Utc);
-        var start = utcDate;
-        var end = start.AddDays(1);
+        var from = GymClock.DayStartUtc(day);
+        var to = from.AddDays(1);
 
-        var checkIns = await _db.CheckIns
-            .Include(c => c.Member)
-                .ThenInclude(m => m.Subscriptions)
-                    .ThenInclude(s => s.Plan)
-            .Include(c => c.Member)
-                .ThenInclude(m => m.Subscriptions)
-                    .ThenInclude(s => s.Payments)
-            .Include(c => c.Member)
-                .ThenInclude(m => m.Subscriptions)
-                    .ThenInclude(s => s.Coach)
-            .Where(c => c.CheckedInAtUtc >= start && c.CheckedInAtUtc < end)
+        return await _db.CheckIns
+            .AsNoTracking()
+            .Where(c => c.CheckedInAtUtc >= from && c.CheckedInAtUtc < to)
             .OrderByDescending(c => c.CheckedInAtUtc)
-            .ToListAsync();
-
-        var logs = checkIns.Select(c =>
-        {
-            if (c.Member == null || c.Member.Subscriptions == null)
-            {
-                return new
-                {
-                    memberName = "عضو غير معروف",
-                    checkInTime = c.CheckedInAtUtc,
-                    result = c.Result.ToString(),
-                    planName = "بدون اشتراك",
-                    withCoach = (bool?)null,
-                    coachName = (string?)null,
-                    amountOwed = 0m
-                };
-            }
-
-            var checkInDateOnly = DateOnly.FromDateTime(c.CheckedInAtUtc);
-
-            var activeSub = c.Member.Subscriptions
-                .Where(s => s.StartDate <= checkInDateOnly && s.EndDate >= checkInDateOnly)
-                .OrderByDescending(s => s.EndDate)
-                .FirstOrDefault();
-
-            decimal totalPaid = activeSub?.Payments != null ? activeSub.Payments.Sum(p => p.Amount) : 0m;
-            decimal owed = activeSub is null ? 0m : Math.Max(0m, activeSub.PriceCharged - totalPaid);
-
-            return new
-            {
-                memberName = c.Member.FullName,
-                checkInTime = c.CheckedInAtUtc,
-                result = c.Result.ToString(),
-                planName = activeSub?.Plan?.Name ?? "بدون اشتراك",
-                withCoach = activeSub?.Plan?.WithCoach,
-                coachName = activeSub?.Coach?.Name,
-                amountOwed = owed
-            };
-        }).ToList();
-
-        return logs;
+            .Select(c => new CheckInLogItem(
+                c.Id,
+                c.Member.FullName,
+                c.CheckedInAtUtc,
+                c.Result,
+                c.Subscription != null ? c.Subscription.Plan.Name : null,
+                c.Subscription != null ? c.Subscription.Plan.DurationInDays : (int?)null,
+                c.Subscription != null && c.Subscription.Coach != null ? c.Subscription.Coach.Name : null,
+                 c.Subscription != null && c.Subscription.WithProgram,
+                c.Subscription != null
+                ? c.Subscription.PriceCharged - c.Subscription.Payments.Sum(p => p.Amount)
+                : (decimal?)null)).ToListAsync();                 
     }
 
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using GymManagementSystem.Core.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Numerics;
 
@@ -31,10 +32,10 @@ namespace GymManagementSystem.Api.Controllers
         }
 
         [HttpGet("logs")]
-        public async Task<IActionResult> GetLogs([FromQuery] DateTime date)
+        public async Task<IActionResult> GetLogs([FromQuery] DateOnly date)
         {
-            var logs = await _services.GetLogsByDateAsync(date);
-            return Ok(logs);
+            if (date == default) { date = GymClock.Today(); }
+            return Ok(await _services.GetLogsByDateAsync(date));
         }
 
     }

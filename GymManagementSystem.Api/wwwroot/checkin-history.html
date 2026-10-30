@@ -217,10 +217,10 @@
 
             <div class="filter-group">
                 <select id="statusFilter">
-                    <option value="ALL">جميع حالات الاشتراكات</option>
-                    <option value="Green">ساري (أخضر)</option>
-                    <option value="Yellow">قريب الانتهاء (أصفر)</option>
-                    <option value="Red">منتهي (أحمر)</option>
+                    <option value="ALL">كل النتائج</option>
+                    <option value="Green">✓ أخضر: دخول مقبول</option>
+                    <option value="Yellow">! أصفر: يجب الدفع أو قرب الانتهاء</option>
+                    <option value="Red">✕ أحمر: لا يوجد اشتراك ساري</option>
                 </select>
 
                 <select id="paymentFilter">
@@ -251,30 +251,45 @@
     <script>
         const $ = id => document.getElementById(id);
         const getToken = () => sessionStorage.getItem('jwt');
+        const ICONS = { Green: '✓', Yellow: '!', Red: '✕' };
         let rawLogs = [];
 
         if (!getToken()) { window.location.href = 'index.html'; }
 
-        $('checkinDate').value = new Date().toISOString().split('T')[0];
+        function gymToday() {
+            return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Damascus' });
+        }
+        $('checkinDate').value = gymToday();
 
-        async function fetchLogs() {
-            const dateVal = $('checkinDate').value;
-            $('emptyMessage').textContent = 'جاري التحميل...';
-            $('logsTableBody').innerHTML = '';
+        function el(tag, cls, text) {
+            const e = document.createElement(tag);
+            if (cls) { e.className = cls; }
+            if (text !== undefined) { e.textContent = text; }
+            return e;
+        }
 
+        function timeText(iso) {
+            const d = new Date(/Z$|[+-]\d\d:\d\d$/.test(iso) ? iso : iso + 'Z');
+            return d.toLocaleTimeString('ar-SY-u-nu-latn', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Asia/Damascus' });
+        }
+
+        async function fetchLogs(quiet) {
+            if (!quiet) {
+                $('emptyMessage').style.display = 'block';
+                $('emptyMessage').textContent = 'جاري التحميل...';
+                $('logsTableBody').innerHTML = '';
+            }
             try {
-                const res = await fetch(`/api/CheckIn/logs?date=${dateVal}`, {
+                const res = await fetch('/api/CheckIn/logs?date=' + $('checkinDate').value, {
                     headers: { 'Authorization': 'Bearer ' + getToken() }
                 });
-
                 if (res.status === 401) { sessionStorage.removeItem('jwt'); window.location.href = 'index.html'; return; }
-                if (!res.ok) throw new Error('HTTP error ' + res.status);
-
+                if (!res.ok) { throw new Error('HTTP ' + res.status); }
                 rawLogs = await res.json();
                 renderTable();
             } catch (err) {
                 console.error('Failed to load check-in logs:', err);
-                $('emptyMessage').textContent = 'تعذر جلب سجل الحضور من الخادم';
+                if (!quiet) { $('emptyMessage').textContent = 'تعذر جلب سجل الحضور من الخادم'; }
             }
         }
 
@@ -282,11 +297,12 @@
             const statusF = $('statusFilter').value;
             const paymentF = $('paymentFilter').value;
 
-            const filtered = rawLogs.filter(item => {
+            const filtered = rawLogs.filter(function (item) {
+                const owed = item.amountOwedNow;
                 const matchStatus = statusF === 'ALL' || item.result === statusF;
                 const matchPayment = paymentF === 'ALL' ||
-                    (paymentF === 'UNPAID' && item.amountOwed > 0) ||
-                    (paymentF === 'PAID' && item.amountOwed === 0);
+                    (paymentF === 'UNPAID' && owed != null && owed > 0) ||
+                    (paymentF === 'PAID' && owed != null && owed === 0);
                 return matchStatus && matchPayment;
             });
 
@@ -298,46 +314,57 @@
                 $('emptyMessage').textContent = 'لا توجد سجلات حضور مطابقة للفلاتر المحددة';
                 return;
             }
-
             $('emptyMessage').style.display = 'none';
 
-            filtered.forEach(log => {
+            filtered.forEach(function (log) {
                 const tr = document.createElement('tr');
 
-                const tdName = document.createElement('td');
-                tdName.innerHTML = `<strong>${log.memberName}</strong>`;
+                const tdName = el('td');
+                tdName.appendChild(el('strong', '', log.memberName));
 
-                const tdTime = document.createElement('td');
-                const timeOnly = new Date(log.checkInTime || log.scanTime).toLocaleTimeString('ar-SY', { hour: '2-digit', minute: '2-digit', hour12: true });
-                tdTime.textContent = timeOnly;
+                const tdTime = el('td', '', timeText(log.checkedInAtUtc));
 
-                const tdStatus = document.createElement('td');
-                const badge = document.createElement('span');
-                badge.className = `status-badge ${log.result || 'Red'}`;
-                const icon = log.result === 'Green' ? '✓' : log.result === 'Yellow' ? '!' : '✕';
-                badge.textContent = `${icon} ${log.planName || 'بدون اشتراك'} (${log.statusText || ''})`;
-                tdStatus.appendChild(badge);
+                let label = (ICONS[log.result] || '?') + ' ' + (log.planName || 'بدون اشتراك');
+                if (log.planDays === 1) { label += ' · يومي'; }
+                if (log.withProgram) { label += ' · مع برنامج'; }
+                const tdStatus = el('td');
+                tdStatus.appendChild(el('span', 'status-badge ' + log.result, label));
 
-                const tdCoach = document.createElement('td');
-                tdCoach.textContent = log.withCoach ? (log.coachName || 'مع مدرب') : 'بدون مدرب';
+                const tdCoach = el('td', '', log.planName == null ? '—' : (log.coachName || 'بدون مدرب'));
 
-                const tdPayment = document.createElement('td');
-                if (log.amountOwed > 0) {
-                    tdPayment.innerHTML = `<span style="color: var(--danger); font-weight: 700;">متبقي: ${log.amountOwed} ل.س</span>`;
+                const tdPayment = el('td');
+                const owed = log.amountOwedNow;
+                if (owed == null) {
+                    tdPayment.textContent = '—';
+                } else if (owed > 0) {
+                    const s = el('span', '', 'المتبقي الآن: ' + owed + ' ل.س');
+                    s.style.color = 'var(--danger)';
+                    s.style.fontWeight = '700';
+                    tdPayment.appendChild(s);
                 } else {
-                    tdPayment.innerHTML = `<span style="color: var(--success);">مدفوع بالكامل</span>`;
+                    const s = el('span', '', 'مدفوع بالكامل');
+                    s.style.color = 'var(--success)';
+                    tdPayment.appendChild(s);
                 }
 
-                tr.append(tdName, tdTime, tdStatus, tdCoach, tdPayment);
+                tr.appendChild(tdName);
+                tr.appendChild(tdTime);
+                tr.appendChild(tdStatus);
+                tr.appendChild(tdCoach);
+                tr.appendChild(tdPayment);
                 tbody.appendChild(tr);
             });
         }
 
-        $('checkinDate').addEventListener('change', fetchLogs);
+        $('checkinDate').addEventListener('change', function () { fetchLogs(false); });
         $('statusFilter').addEventListener('change', renderTable);
         $('paymentFilter').addEventListener('change', renderTable);
+        setInterval(function () {
+            if (!document.hidden && $('checkinDate').value === gymToday()) { fetchLogs(true); }
+        }, 10000);
 
-        fetchLogs();
+        fetchLogs(false);
     </script>
+
 </body>
 </html>

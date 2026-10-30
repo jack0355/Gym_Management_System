@@ -39,9 +39,14 @@ namespace GymManagementSystem.Infrastructure.Migrations
                     b.Property<int>("Result")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("SubscriptionId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("MemberId");
+
+                    b.HasIndex("SubscriptionId");
 
                     b.ToTable("CheckIns");
                 });
@@ -255,7 +260,14 @@ namespace GymManagementSystem.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("GymManagementSystem.Core.Entities.Subscription", "Subscription")
+                        .WithMany()
+                        .HasForeignKey("SubscriptionId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Member");
+
+                    b.Navigation("Subscription");
                 });
 
             modelBuilder.Entity("GymManagementSystem.Core.Entities.Payment", b =>

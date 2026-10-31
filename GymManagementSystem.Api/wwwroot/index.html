@@ -354,6 +354,28 @@
                 background: linear-gradient(135deg, #1d4ed8, #1e40af);
                 transform: translateY(-1px);
             }
+
+        button.nav-members-btn {
+            background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+            border: none;
+            width: auto;
+            margin: 0;
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #fff;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            button.nav-members-btn:hover {
+                background: linear-gradient(135deg, #7c3aed, #5b21b6);
+                transform: translateY(-1px);
+            }
     </style>
 </head>
 <body>
@@ -366,6 +388,9 @@
         <div class="header-actions">
             <button id="navHistory" class="nav-history-btn hidden" onclick="location.href='checkin-history.html'">📊 سجل الحضور</button>
             <button id="navAddMember" class="nav-add-btn hidden" onclick="location.href='add-member.html'">➕ إضافة عضو جديد</button>
+            <button id="membersBtn" class="nav-members-btn hidden" onclick="location.href='Members.html'">
+                👤 إدارة المشتركين
+            </button>
             <button id="logout" class="ghost hidden">
                 تسجيل خروج
             </button>
@@ -414,6 +439,7 @@
             $('logout').classList.toggle('hidden', !loggedIn);
             $('navHistory').classList.toggle('hidden', !loggedIn);
             $('navAddMember').classList.toggle('hidden', !loggedIn);
+            $('membersBtn').classList.toggle('hidden', !loggedIn);
             if (loggedIn) { idle(); $('token').focus(); }
         }
 
@@ -453,6 +479,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userName: $('user').value, password: $('pass').value })
                 });
+                if (res.status === 429) { $('loginError').textContent = 'محاولات كثيرة، انتظر دقيقة ثم أعد المحاولة'; return; }
                 if (!res.ok) { $('loginError').textContent = 'اسم المستخدم أو كلمة المرور غير صحيحة'; return; }
                 sessionStorage.setItem('jwt', (await res.json()).token);
                 $('pass').value = '';

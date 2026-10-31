@@ -6,101 +6,174 @@
     <title>الأعضاء · إدارة النادي</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
+
+
         :root {
             --bg: #060911;
             --surface: #0f172a;
+            --surface-hover: #1e293b;
             --border: #334155;
+            --border-focus: #3b82f6;
             --text: #f8fafc;
             --muted: #94a3b8;
             --primary: #3b82f6;
+            --primary-hover: #2563eb;
             --green: #10b981;
             --yellow: #f59e0b;
             --red: #ef4444;
+            --radius-lg: 20px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             font-family: 'Tajawal', Tahoma, Arial, sans-serif;
         }
 
-        * {
+
+        *, *::before, *::after {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
-            margin: 0;
-            background: var(--bg);
+            background-color: var(--bg);
             color: var(--text);
             min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
         }
+
 
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 12px;
+            gap: 16px;
             flex-wrap: wrap;
-            padding: 14px 20px;
+            padding: 16px 28px;
             border-bottom: 1px solid var(--border);
-            background: var(--surface);
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
             header a {
                 color: var(--muted);
                 text-decoration: none;
                 margin-inline-start: 14px;
+                transition: var(--transition);
             }
 
+                header a:hover {
+                    color: var(--text);
+                }
+
+
         main {
-            max-width: 640px;
+            max-width: 680px;
             margin: 0 auto;
-            padding: 16px;
+            padding: 24px 16px;
             display: grid;
-            gap: 14px;
+            gap: 16px;
         }
 
         .card {
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 20px;
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-lg);
         }
 
-        input, select, button {
+
+        input, select, textarea {
             font: inherit;
             width: 100%;
-            padding: 13px 16px;
-            border-radius: 12px;
+            padding: 14px 16px;
+            border-radius: var(--radius-md);
             border: 1px solid var(--border);
             background: #0b1329;
             color: var(--text);
-            margin-block-end: 12px;
+            margin-block-end: 14px;
+            transition: var(--transition);
         }
 
-            input:focus, select:focus {
-                outline: 2px solid var(--primary);
+            input:focus, select:focus, textarea:focus {
+                outline: none;
+                border-color: var(--border-focus);
+                box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
             }
 
+            input:disabled, select:disabled, textarea:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+
+
         button {
-            background: var(--primary);
+            font: inherit;
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: var(--radius-md);
             border: none;
+            background: var(--primary);
+            color: var(--text);
             font-weight: 700;
             cursor: pointer;
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
+
+            button:hover:not(:disabled) {
+                background: var(--primary-hover);
+                transform: translateY(-1px);
+                box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+            }
+
+            button:active:not(:disabled) {
+                transform: translateY(0);
+            }
 
             button.ghost {
                 background: transparent;
                 border: 1px solid var(--border);
                 color: var(--muted);
+                box-shadow: none;
             }
 
-            button:disabled, input:disabled, select:disabled {
-                opacity: .5;
+                button.ghost:hover:not(:disabled) {
+                    background: var(--surface-hover);
+                    color: var(--text);
+                    border-color: var(--text);
+                }
+
+            button:disabled {
+                opacity: 0.5;
                 cursor: not-allowed;
+                transform: none !important;
+                box-shadow: none !important;
             }
+
 
         label {
             display: block;
             color: var(--muted);
-            font-size: .9rem;
+            font-size: 0.9rem;
+            font-weight: 600;
             margin-block-end: 6px;
         }
+
 
         .result {
             display: flex;
@@ -116,38 +189,41 @@
             }
 
         .badge {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
             padding: 6px 14px;
             border-radius: 999px;
             font-weight: 700;
+            font-size: 0.85rem;
             margin-block-end: 12px;
         }
 
             .badge.Green {
-                background: rgba(16,185,129,.15);
+                background: rgba(16, 185, 129, 0.15);
                 color: #34d399;
-                border: 1px solid rgba(16,185,129,.4);
+                border: 1px solid rgba(16, 185, 129, 0.4);
             }
 
             .badge.Yellow {
-                background: rgba(245,158,11,.15);
+                background: rgba(245, 158, 11, 0.15);
                 color: #fbbf24;
-                border: 1px solid rgba(245,158,11,.4);
+                border: 1px solid rgba(245, 158, 11, 0.4);
             }
 
             .badge.Red {
-                background: rgba(239,68,68,.15);
+                background: rgba(239, 68, 68, 0.15);
                 color: #f87171;
-                border: 1px solid rgba(239,68,68,.4);
+                border: 1px solid rgba(239, 68, 68, 0.4);
             }
+
 
         .row {
             display: flex;
             justify-content: space-between;
             gap: 12px;
-            padding: 8px 0;
+            padding: 10px 0;
             border-bottom: 1px solid var(--border);
-            font-size: .95rem;
+            font-size: 0.95rem;
         }
 
             .row span:first-child {
@@ -156,7 +232,7 @@
 
         .note {
             color: var(--yellow);
-            font-size: .9rem;
+            font-size: 0.9rem;
             margin: 10px 0;
         }
 
@@ -173,11 +249,12 @@
                 color: var(--green);
             }
 
+
         .actions {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 14px;
+            gap: 12px;
+            margin-top: 16px;
         }
 
             .actions button {
@@ -189,18 +266,22 @@
             align-items: center;
             gap: 12px;
             margin-block-end: 12px;
+            cursor: pointer;
         }
 
             .check input {
-                width: 22px;
-                height: 22px;
+                width: 20px;
+                height: 20px;
                 padding: 0;
                 margin: 0;
+                accent-color: var(--primary);
+                cursor: pointer;
             }
 
             .check label {
                 margin: 0;
                 color: var(--text);
+                cursor: pointer;
             }
 
         .hidden {
@@ -210,8 +291,21 @@
 </head>
 <body>
     <header>
-        <strong>👥 الأعضاء</strong>
-        <nav><a href="index.html">بوابة الفحص</a><a href="add-member.html">+ عضو جديد</a></nav>
+
+        <div class="logo-area">
+            <div class="logo-icon">👥</div>
+            <strong>إدارة المشتركين</strong>
+        </div>
+
+
+        <nav class="header-actions">
+            <a href="index.html" class="header-btn nav-history-btn">
+                🛡️ بوابة الفحص
+            </a>
+            <a href="add-member.html" class="header-btn nav-add-btn">
+                ➕ عضو جديد
+            </a>
+        </nav>
     </header>
     <main>
         <p id="toast" class="msg hidden"></p>
@@ -534,6 +628,7 @@
         $('renewConfirm').addEventListener('click', renew);
         $('rPlan').addEventListener('change', updateRenewForm);
         $('rProgram').addEventListener('change', updateRenewForm);
+        $('memberGender').addEventListener('change', fillcoahces);
         loadLists();
     </script>
 </body>

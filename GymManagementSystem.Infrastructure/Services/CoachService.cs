@@ -1,4 +1,4 @@
-﻿using GymManagementSystem.Core.Models;
+﻿using GymManagementSystem.Core.Models.Responses;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

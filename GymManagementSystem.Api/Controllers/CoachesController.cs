@@ -1,4 +1,4 @@
-﻿using GymManagementSystem.Core.Models;
+﻿using GymManagementSystem.Core.Models.Responses;
 using GymManagementSystem.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

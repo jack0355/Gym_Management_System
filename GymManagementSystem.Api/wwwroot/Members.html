@@ -1,0 +1,540 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>الأعضاء · إدارة النادي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #060911;
+            --surface: #0f172a;
+            --border: #334155;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --primary: #3b82f6;
+            --green: #10b981;
+            --yellow: #f59e0b;
+            --red: #ef4444;
+            font-family: 'Tajawal', Tahoma, Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border);
+            background: var(--surface);
+        }
+
+            header a {
+                color: var(--muted);
+                text-decoration: none;
+                margin-inline-start: 14px;
+            }
+
+        main {
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 16px;
+            display: grid;
+            gap: 14px;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 20px;
+        }
+
+        input, select, button {
+            font: inherit;
+            width: 100%;
+            padding: 13px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: #0b1329;
+            color: var(--text);
+            margin-block-end: 12px;
+        }
+
+            input:focus, select:focus {
+                outline: 2px solid var(--primary);
+            }
+
+        button {
+            background: var(--primary);
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+            button.ghost {
+                background: transparent;
+                border: 1px solid var(--border);
+                color: var(--muted);
+            }
+
+            button:disabled, input:disabled, select:disabled {
+                opacity: .5;
+                cursor: not-allowed;
+            }
+
+        label {
+            display: block;
+            color: var(--muted);
+            font-size: .9rem;
+            margin-block-end: 6px;
+        }
+
+        .result {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: start;
+            font-weight: 500;
+            margin-block-end: 8px;
+        }
+
+            .result small {
+                color: var(--muted);
+            }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-weight: 700;
+            margin-block-end: 12px;
+        }
+
+            .badge.Green {
+                background: rgba(16,185,129,.15);
+                color: #34d399;
+                border: 1px solid rgba(16,185,129,.4);
+            }
+
+            .badge.Yellow {
+                background: rgba(245,158,11,.15);
+                color: #fbbf24;
+                border: 1px solid rgba(245,158,11,.4);
+            }
+
+            .badge.Red {
+                background: rgba(239,68,68,.15);
+                color: #f87171;
+                border: 1px solid rgba(239,68,68,.4);
+            }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: .95rem;
+        }
+
+            .row span:first-child {
+                color: var(--muted);
+            }
+
+        .note {
+            color: var(--yellow);
+            font-size: .9rem;
+            margin: 10px 0;
+        }
+
+        .msg {
+            margin: 0 0 10px;
+            font-weight: 700;
+        }
+
+            .msg.error {
+                color: var(--red);
+            }
+
+            .msg.ok {
+                color: var(--green);
+            }
+
+        .actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+            .actions button {
+                margin: 0;
+            }
+
+        .check {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-block-end: 12px;
+        }
+
+            .check input {
+                width: 22px;
+                height: 22px;
+                padding: 0;
+                margin: 0;
+            }
+
+            .check label {
+                margin: 0;
+                color: var(--text);
+            }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <strong>👥 الأعضاء</strong>
+        <nav><a href="index.html">بوابة الفحص</a><a href="add-member.html">+ عضو جديد</a></nav>
+    </header>
+    <main>
+        <p id="toast" class="msg hidden"></p>
+
+        <section class="card">
+            <label for="q">ابحث بالاسم أو رقم الهاتف</label>
+            <input id="q" placeholder="حرفان على الأقل" autocomplete="off">
+            <div id="results"></div>
+        </section>
+
+        <section id="memberCard" class="card hidden">
+            <h2 id="mName" style="margin:0 0 4px"></h2>
+            <p id="mPhone" style="color:var(--muted); margin:0 0 12px"></p>
+            <div id="mBadge" class="badge"></div>
+            <div id="mRows"></div>
+            <p id="mNote" class="note hidden"></p>
+            <div class="actions">
+                <button id="payBtn">💵 تسجيل دفعة</button>
+                <button id="renewBtn" class="ghost">🔁 تجديد الاشتراك</button>
+            </div>
+        </section>
+
+        <section id="payPanel" class="card hidden">
+            <h3 style="margin:0 0 12px">تسجيل دفعة</h3>
+            <label for="payAmount">المبلغ (ل.س)</label>
+            <input id="payAmount" type="number" min="0" step="0.01" inputmode="decimal">
+            <p id="payMsg" class="msg"></p>
+            <button id="payConfirm">حفظ الدفعة</button>
+        </section>
+
+        <section id="renewPanel" class="card hidden">
+            <h3 style="margin:0 0 12px">تجديد الاشتراك</h3>
+            <label for="rPlan">الاشتراك</label>
+            <select id="rPlan"><option value="">اختر الاشتراك</option></select>
+            <div id="rCoachGroup" class="hidden">
+                <label for="rCoach">المدرب</label>
+                <select id="rCoach"><option value="">اختر المدرب</option></select>
+            </div>
+            <div id="rProgramGroup" class="check hidden">
+                <input type="checkbox" id="rProgram">
+                <label for="rProgram" id="rProgramLabel">برنامج تدريبي</label>
+            </div>
+            <label for="rPaid">المبلغ المدفوع الآن (ل.س)</label>
+            <input id="rPaid" type="number" min="0" step="0.01" inputmode="decimal" disabled>
+            <p id="rHint" class="note"></p>
+            <p id="rMsg" class="msg"></p>
+            <button id="renewConfirm">تأكيد التجديد</button>
+        </section>
+    </main>
+
+    <script>
+        const $ = id => document.getElementById(id);
+        const getToken = () => sessionStorage.getItem('jwt');
+        const ICONS = { Green: '✓', Yellow: '!', Red: '✕' };
+        let plans = [], coaches = [], current = null, renewSub = null, searchTimer = null, flashTimer = null;
+
+        if (!getToken()) { window.location.href = 'index.html'; }
+
+        function el(tag, cls, text) {
+            const e = document.createElement(tag);
+            if (cls) { e.className = cls; }
+            if (text !== undefined) { e.textContent = text; }
+            return e;
+        }
+
+        function fmt(iso) {
+            return new Date(iso + 'T00:00:00')
+                .toLocaleDateString('ar-SY-u-nu-latn', { day: 'numeric', month: 'long', year: 'numeric' });
+        }
+
+        function setMsg(id, text, kind) {
+            $(id).textContent = text;
+            $(id).className = 'msg ' + (kind || '');
+        }
+
+        function flash(text, kind) {
+            setMsg('toast', text, kind);
+            clearTimeout(flashTimer);
+            flashTimer = setTimeout(function () { $('toast').className = 'msg hidden'; }, 6000);
+        }
+
+        async function explain(res) {
+            let text = '';
+            try { text = await res.text(); } catch (e) { }
+            console.error('HTTP ' + res.status + ' ' + text);
+            const known = [
+                ['already registered', 'هذا العضو مسجل مسبقاً'],
+                ['renewal', 'للعضو تجديد قادم بالفعل'],
+                ['inactive', 'العضو غير مفعّل'],
+                ['Unknown member', 'العضو غير موجود'],
+                ['Unknown plan', 'الاشتراك غير موجود'],
+                ['Coach is required', 'اختر المدرب'],
+                ['Unknown coach', 'المدرب غير موجود'],
+                ['can only train women', 'المدربة تدرّب النساء فقط'],
+                ['no coach', 'هذا الاشتراك بدون مدرب'],
+                ['Program is not available', 'البرنامج غير متاح لهذا الاشتراك'],
+                ['more than what is owed', 'المبلغ أكبر من المطلوب']
+            ];
+            for (let i = 0; i < known.length; i++) {
+                if (text.indexOf(known[i][0]) !== -1) { return known[i][1]; }
+            }
+            if (res.status === 403) { return 'هذه العملية غير مسموحة لحسابك'; }
+            if (res.status === 400) { return 'بيانات غير صالحة، التفاصيل في Console (F12)'; }
+            return 'خطأ في الخادم (' + res.status + ')';
+        }
+
+        async function call(path, method, body) {
+            const opts = { method: method || 'GET', headers: { 'Authorization': 'Bearer ' + getToken() } };
+            if (body !== undefined) {
+                opts.headers['Content-Type'] = 'application/json';
+                opts.body = JSON.stringify(body);
+            }
+            const res = await fetch(path, opts);
+            if (res.status === 401) {
+                sessionStorage.removeItem('jwt');
+                window.location.href = 'index.html';
+                throw new Error('LOGIN');
+            }
+            if (!res.ok) {
+                const e = new Error(await explain(res));
+                e.expected = true;
+                throw e;
+            }
+            return res.json();
+        }
+
+        async function loadLists() {
+            try {
+                plans = await call('/api/Plans');
+                coaches = await call('/api/Coaches');
+                plans.forEach(function (p) {
+                    const label = p.name + ' — ' + (p.durationInDays === 1 ? 'يومي' : p.durationInDays + ' يوم') + ' — ' + p.price + ' ل.س';
+                    $('rPlan').appendChild(new Option(label, p.id));
+                });
+            } catch (err) {
+                if (err.message !== 'LOGIN') { console.error('lists failed:', err); }
+            }
+        }
+
+        async function doSearch() {
+            const q = $('q').value.trim();
+            const box = $('results');
+            box.innerHTML = '';
+            if (q.length < 2) { return; }
+            try {
+                const list = await call('/api/Members/search?q=' + encodeURIComponent(q));
+                if (!list.length) { box.appendChild(el('p', 'note', 'لا توجد نتائج')); return; }
+                list.forEach(function (m) {
+                    const b = el('button', 'ghost result');
+                    b.appendChild(el('span', '', m.fullName + (m.isActive ? '' : ' (غير مفعّل)')));
+                    b.appendChild(el('small', '', m.phone));
+                    b.addEventListener('click', function () { openMember(m.id); });
+                    box.appendChild(b);
+                });
+            } catch (err) {
+                if (err.message !== 'LOGIN') { box.appendChild(el('p', 'note', 'تعذر البحث')); }
+            }
+        }
+
+        function addRow(label, value) {
+            const row = el('div', 'row');
+            row.appendChild(el('span', '', label));
+            row.appendChild(el('strong', '', value));
+            $('mRows').appendChild(row);
+        }
+
+        function closePanels() {
+            $('payPanel').classList.add('hidden');
+            $('renewPanel').classList.add('hidden');
+            $('payMsg').textContent = '';
+            $('rMsg').textContent = '';
+        }
+
+        function renderCard() {
+            const s = current;
+            $('memberCard').classList.remove('hidden');
+            $('mName').textContent = s.fullName;
+            $('mPhone').textContent = s.phone;
+
+            let text;
+            if (!s.isActive) { text = 'غير مفعّل'; }
+            else if (s.status === 'Green') { text = 'ساري'; }
+            else if (s.status === 'Yellow') { text = s.amountOwed > 0 ? 'يجب الدفع' : 'ينتهي قريباً'; }
+            else { text = 'لا يوجد اشتراك ساري'; }
+            $('mBadge').className = 'badge ' + s.status;
+            $('mBadge').textContent = (ICONS[s.status] || '') + ' ' + text;
+
+            $('mRows').innerHTML = '';
+            if (s.subscriptionId) {
+                addRow('الاشتراك', s.planName);
+                addRow('المدرب', s.coachName || 'بدون مدرب');
+                addRow('البرنامج', s.withProgram ? 'مع برنامج' : 'بدون برنامج');
+                addRow('من', fmt(s.startDate));
+                addRow('إلى', fmt(s.endDate));
+                addRow('السعر', s.priceCharged + ' ل.س');
+                addRow('المتبقي', s.amountOwed + ' ل.س');
+            }
+            $('mNote').classList.toggle('hidden', !s.hasWaitingRenewal);
+            $('mNote').textContent = s.hasWaitingRenewal ? 'يوجد تجديد قادم لهذا العضو' : '';
+
+            $('payBtn').disabled = !(s.subscriptionId && s.amountOwed > 0);
+            $('renewBtn').disabled = !!s.hasWaitingRenewal || !s.isActive;
+        }
+
+        async function openMember(id) {
+            try {
+                current = await call('/api/Members/' + id + '/summary');
+                renewSub = null;
+                lockRenew(false);
+                closePanels();
+                renderCard();
+            } catch (err) {
+                if (err.message !== 'LOGIN') { flash('تعذر تحميل بيانات العضو', 'error'); }
+            }
+        }
+
+        async function pay() {
+            const amount = parseFloat($('payAmount').value) || 0;
+            if (amount <= 0) { setMsg('payMsg', 'أدخل مبلغاً صحيحاً', 'error'); return; }
+            $('payConfirm').disabled = true;
+            try {
+                await call('/api/Payments', 'POST', { subscriptionId: current.subscriptionId, amount: amount, note: null });
+                await openMember(current.id);
+                flash('تم تسجيل الدفعة', 'ok');
+            } catch (err) {
+                if (err.message === 'LOGIN') { return; }
+                setMsg('payMsg', err.expected ? err.message : 'تعذر الاتصال بالخادم', 'error');
+            } finally {
+                $('payConfirm').disabled = false;
+            }
+        }
+
+        function currentRenewPlan() {
+            return plans.find(function (p) { return String(p.id) === $('rPlan').value; });
+        }
+
+        function lockRenew(locked) {
+            ['rPlan', 'rCoach', 'rProgram'].forEach(function (id) { $(id).disabled = locked; });
+        }
+
+        function fillRenewCoaches() {
+            const isMan = current && current.gender === 'Male';
+            const sel = $('rCoach');
+            sel.innerHTML = '';
+            sel.appendChild(new Option('اختر المدرب', ''));
+            coaches
+                .filter(function (c) { return !isMan || c.gender === 'Male'; })
+                .forEach(function (c) { sel.appendChild(new Option(c.name, c.id)); });
+        }
+
+        function updateRenewForm() {
+            const p = currentRenewPlan();
+            const hasProgram = !!(p && p.programPrice > 0);
+            $('rCoachGroup').classList.toggle('hidden', !(p && p.withCoach));
+            $('rProgramGroup').classList.toggle('hidden', !hasProgram);
+            if (!(p && p.withCoach)) { $('rCoach').value = ''; }
+            if (!hasProgram) { $('rProgram').checked = false; }
+            $('rProgramLabel').textContent = hasProgram ? 'برنامج تدريبي (+' + p.programPrice + ' ل.س)' : 'برنامج تدريبي';
+            const total = p ? p.price + ($('rProgram').checked ? p.programPrice : 0) : 0;
+            $('rPaid').disabled = !p;
+            $('rPaid').value = p ? total : '';
+            $('rHint').textContent = p ? 'إجمالي السعر: ' + total + ' ل.س' : '';
+        }
+
+        async function renew() {
+            const p = currentRenewPlan();
+            if (!p) { setMsg('rMsg', 'اختر الاشتراك', 'error'); return; }
+            const coachId = $('rCoach').value;
+            if (p.withCoach && !coachId && !renewSub) { setMsg('rMsg', 'اختر المدرب', 'error'); return; }
+            const amount = parseFloat($('rPaid').value) || 0;
+
+            $('renewConfirm').disabled = true;
+            try {
+                if (!renewSub) {
+                    renewSub = await call('/api/Subscriptions', 'POST', {
+                        memberId: current.id,
+                        planId: p.id,
+                        coachId: coachId ? Number(coachId) : null,
+                        withProgram: $('rProgram').checked
+                    });
+                    lockRenew(true);
+                }
+                if (amount > 0) {
+                    await call('/api/Payments', 'POST', { subscriptionId: renewSub.id, amount: amount, note: null });
+                }
+                const done = renewSub;
+                renewSub = null;
+                await openMember(current.id);
+                flash('تم التجديد: من ' + fmt(done.startDate) + ' إلى ' + fmt(done.endDate), 'ok');
+            } catch (err) {
+                if (err.message === 'LOGIN') { return; }
+                console.error('renew failed:', err);
+                const saved = renewSub ? ' — تم إنشاء الاشتراك، أعد المحاولة لتسجيل الدفعة فقط' : '';
+                setMsg('rMsg', (err.expected ? err.message : 'تعذر الاتصال بالخادم') + saved, 'error');
+            } finally {
+                $('renewConfirm').disabled = false;
+            }
+        }
+
+        $('q').addEventListener('input', function () {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(doSearch, 300);
+        });
+        $('payBtn').addEventListener('click', function () {
+            closePanels();
+            $('payAmount').value = current.amountOwed;
+            $('payPanel').classList.remove('hidden');
+            $('payAmount').focus();
+        });
+        $('renewBtn').addEventListener('click', function () {
+            closePanels();
+            renewSub = null;
+            lockRenew(false);
+            $('rPlan').value = '';
+            fillRenewCoaches();
+            updateRenewForm();
+            $('renewPanel').classList.remove('hidden');
+        });
+        $('payConfirm').addEventListener('click', pay);
+        $('renewConfirm').addEventListener('click', renew);
+        $('rPlan').addEventListener('change', updateRenewForm);
+        $('rProgram').addEventListener('change', updateRenewForm);
+        loadLists();
+    </script>
+</body>
+</html>

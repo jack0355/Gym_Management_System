@@ -1,6 +1,7 @@
 ﻿using GymManagementSystem.Core.Entities;
+using GymManagementSystem.Core.Enums;
 using GymManagementSystem.Core.Helpers;
-using GymManagementSystem.Core.Models;
+using GymManagementSystem.Core.Models.Responses;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -37,7 +38,13 @@ namespace GymManagementSystem.Infrastructure.Services
                 if (coachId is null) return (null, "Coach is required for this plan");
                 coach = await _db.Coaches.FirstOrDefaultAsync(c => c.Id == coachId && c.IsActive);
                 if (coach is null) return (null, "Unknown Coach");
+
+
             }
+
+           
+
+
             else if (coachId is not null)
                 return (null, "This plan has no coach");
 

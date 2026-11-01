@@ -5,7 +5,9 @@ namespace GymManagementSystem.Api.Models
     public record CreateSubscriptionRequest
         (
         [Range(1,int.MaxValue)] int MemberId ,
-        [Range(1, int.MaxValue)]int PlandId
+        [Range(1, int.MaxValue)]int PlanId , 
+        int? CoachId , 
+        bool WithProgram
         );
    
     

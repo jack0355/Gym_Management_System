@@ -22,7 +22,7 @@ namespace GymManagementSystem.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Gym_Managemnt_System_Core.Entities.CheckIn", b =>
+            modelBuilder.Entity("GymManagementSystem.Core.Entities.CheckIn", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -39,14 +39,43 @@ namespace GymManagementSystem.Infrastructure.Migrations
                     b.Property<int>("Result")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("SubscriptionId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("MemberId");
 
+                    b.HasIndex("SubscriptionId");
+
                     b.ToTable("CheckIns");
                 });
 
-            modelBuilder.Entity("Gym_Managemnt_System_Core.Entities.Members", b =>
+            modelBuilder.Entity("GymManagementSystem.Core.Entities.Coach", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("gender")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Coaches");
+                });
+
+            modelBuilder.Entity("GymManagementSystem.Core.Entities.Member", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -86,7 +115,7 @@ namespace GymManagementSystem.Infrastructure.Migrations
                     b.ToTable("Members");
                 });
 
-            modelBuilder.Entity("Gym_Managemnt_System_Core.Entities.Payment", b =>
+            modelBuilder.Entity("GymManagementSystem.Core.Entities.Payment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -119,7 +148,7 @@ namespace GymManagementSystem.Infrastructure.Migrations
                     b.ToTable("Payments");
                 });
 
-            modelBuilder.Entity("Gym_Managemnt_System_Core.Entities.Plan", b =>
+            modelBuilder.Entity("GymManagementSystem.Core.Entities.Plan", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -139,6 +168,10 @@ namespace GymManagementSystem.Infrastructure.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("numeric(18,2)");
 
+                    b.Property<decimal>("ProgramPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
                     b.Property<bool>("WithCoach")
                         .HasColumnType("boolean");
 
@@ -147,13 +180,16 @@ namespace GymManagementSystem.Infrastructure.Migrations
                     b.ToTable("Plans");
                 });
 
-            modelBuilder.Entity("Gym_Managemnt_System_Core.Entities.Subscription", b =>
+            modelBuilder.Entity("GymManagementSystem.Core.Entities.Subscription", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CoachId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("CreatedByUserId")
                         .HasColumnType("integer");
@@ -174,7 +210,12 @@ namespace GymManagementSystem.Infrastructure.Migrations
                     b.Property<DateOnly>("StartDate")
                         .HasColumnType("date");
 
+                    b.Property<bool>("WithProgram")
+                        .HasColumnType("boolean");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("CoachId");
 
                     b.HasIndex("CreatedByUserId");
 
@@ -185,7 +226,7 @@ namespace GymManagementSystem.Infrastructure.Migrations
                     b.ToTable("Subscriptions");
                 });
 
-            modelBuilder.Entity("Gym_Managemnt_System_Core.Entities.User", b =>
+            modelBuilder.Entity("GymManagementSystem.Core.Entities.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -214,26 +255,33 @@ namespace GymManagementSystem.Infrastructure.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Gym_Managemnt_System_Core.Entities.CheckIn", b =>
+            modelBuilder.Entity("GymManagementSystem.Core.Entities.CheckIn", b =>
                 {
-                    b.HasOne("Gym_Managemnt_System_Core.Entities.Members", "Member")
+                    b.HasOne("GymManagementSystem.Core.Entities.Member", "Member")
                         .WithMany("CheckIns")
                         .HasForeignKey("MemberId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("GymManagementSystem.Core.Entities.Subscription", "Subscription")
+                        .WithMany()
+                        .HasForeignKey("SubscriptionId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Member");
+
+                    b.Navigation("Subscription");
                 });
 
-            modelBuilder.Entity("Gym_Managemnt_System_Core.Entities.Payment", b =>
+            modelBuilder.Entity("GymManagementSystem.Core.Entities.Payment", b =>
                 {
-                    b.HasOne("Gym_Managemnt_System_Core.Entities.User", "ReceivedBy")
+                    b.HasOne("GymManagementSystem.Core.Entities.User", "ReceivedBy")
                         .WithMany()
                         .HasForeignKey("ReceivedByUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Gym_Managemnt_System_Core.Entities.Subscription", "Subscription")
+                    b.HasOne("GymManagementSystem.Core.Entities.Subscription", "Subscription")
                         .WithMany("Payments")
                         .HasForeignKey("SubscriptionId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -244,25 +292,32 @@ namespace GymManagementSystem.Infrastructure.Migrations
                     b.Navigation("Subscription");
                 });
 
-            modelBuilder.Entity("Gym_Managemnt_System_Core.Entities.Subscription", b =>
+            modelBuilder.Entity("GymManagementSystem.Core.Entities.Subscription", b =>
                 {
-                    b.HasOne("Gym_Managemnt_System_Core.Entities.User", "CreatedBy")
+                    b.HasOne("GymManagementSystem.Core.Entities.Coach", "Coach")
+                        .WithMany()
+                        .HasForeignKey("CoachId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("GymManagementSystem.Core.Entities.User", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedByUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Gym_Managemnt_System_Core.Entities.Members", "Members")
+                    b.HasOne("GymManagementSystem.Core.Entities.Member", "Members")
                         .WithMany("Subscriptions")
                         .HasForeignKey("MemberId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Gym_Managemnt_System_Core.Entities.Plan", "Plan")
+                    b.HasOne("GymManagementSystem.Core.Entities.Plan", "Plan")
                         .WithMany("Subscriptions")
                         .HasForeignKey("PlanId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Coach");
 
                     b.Navigation("CreatedBy");
 
@@ -271,19 +326,19 @@ namespace GymManagementSystem.Infrastructure.Migrations
                     b.Navigation("Plan");
                 });
 
-            modelBuilder.Entity("Gym_Managemnt_System_Core.Entities.Members", b =>
+            modelBuilder.Entity("GymManagementSystem.Core.Entities.Member", b =>
                 {
                     b.Navigation("CheckIns");
 
                     b.Navigation("Subscriptions");
                 });
 
-            modelBuilder.Entity("Gym_Managemnt_System_Core.Entities.Plan", b =>
+            modelBuilder.Entity("GymManagementSystem.Core.Entities.Plan", b =>
                 {
                     b.Navigation("Subscriptions");
                 });
 
-            modelBuilder.Entity("Gym_Managemnt_System_Core.Entities.Subscription", b =>
+            modelBuilder.Entity("GymManagementSystem.Core.Entities.Subscription", b =>
                 {
                     b.Navigation("Payments");
                 });

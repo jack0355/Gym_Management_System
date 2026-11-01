@@ -1,5 +1,5 @@
 ﻿using GymManagementSystem.Core.Entities;
-using GymManagementSystem.Core.Models;
+using GymManagementSystem.Core.Models.Responses;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -37,7 +37,7 @@ namespace GymManagementSystem.Infrastructure.Services
             _db.Plans.Add(plan);
             await _db.SaveChangesAsync();
 
-            return new PlanResponse(plan.Id , plan.Name, plan.DurationInDays, plan.Price, plan.WithCoach);
+            return new PlanResponse(plan.Id , plan.Name, plan.DurationInDays, plan.Price, plan.WithCoach , plan.ProgramPrice);
 
 
         }
@@ -49,7 +49,7 @@ namespace GymManagementSystem.Infrastructure.Services
             return await _db.Plans
                 .AsNoTracking()
                 .OrderBy(p => p.Price)
-                .Select(p => new PlanResponse(p.Id, p.Name, p.DurationInDays, p.Price, p.WithCoach))
+                .Select(p => new PlanResponse(p.Id, p.Name, p.DurationInDays, p.Price, p.WithCoach, p.ProgramPrice))
                 .ToListAsync();
         }
 

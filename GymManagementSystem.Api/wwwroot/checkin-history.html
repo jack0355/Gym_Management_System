@@ -1,0 +1,370 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>سجل الحضور اليومي · نظام إدارة النادي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #060911;
+            --surface: #0f172a;
+            --border: #334155;
+            --border-focus: #3b82f6;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #3b82f6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --radius-lg: 20px;
+            --radius-md: 12px;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--bg-base);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 36px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        header strong {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #60a5fa;
+        }
+
+        main {
+            flex: 1;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 20px;
+        }
+
+        .filter-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        input[type="date"], select {
+            font: inherit;
+            padding: 10px 14px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            background: #0b1329;
+            color: var(--text-main);
+            outline: none;
+        }
+
+            input[type="date"]:focus, select:focus {
+                border-color: var(--border-focus);
+            }
+
+        .table-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: start;
+        }
+
+        th {
+            background: #1e293b;
+            padding: 16px 20px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+            font-size: 0.95rem;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+            .status-badge.Green {
+                background: rgba(16, 185, 129, 0.15);
+                color: #34d399;
+                border: 1px solid rgba(16, 185, 129, 0.3);
+            }
+
+            .status-badge.Yellow {
+                background: rgba(245, 158, 11, 0.15);
+                color: #fbbf24;
+                border: 1px solid rgba(245, 158, 11, 0.3);
+            }
+
+            .status-badge.Red {
+                background: rgba(239, 68, 68, 0.15);
+                color: #f87171;
+                border: 1px solid rgba(239, 68, 68, 0.3);
+            }
+
+        button.secondary-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font: inherit;
+        }
+
+            button.secondary-btn:hover {
+                background: rgba(255, 255, 255, 0.05);
+                color: var(--text-main);
+            }
+
+        .empty-state {
+            padding: 40px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-area">
+            <div class="logo-icon">📊</div>
+            <strong>نظام إدارة النادي · سجل الحضور</strong>
+        </div>
+        <div>
+            <button class="secondary-btn" onclick="location.href='index.html'">← بوابة الفحص</button>
+            <button class="secondary-btn" onclick="location.href='add-member.html'">+ إضافة عضو</button>
+        </div>
+    </header>
+
+    <main>
+        <div class="filter-card">
+            <div class="filter-group">
+                <label style="color: var(--text-muted); font-size: 0.9rem;">اختر اليوم:</label>
+                <input type="date" id="checkinDate">
+            </div>
+
+            <div class="filter-group">
+                <select id="statusFilter">
+                    <option value="ALL">كل النتائج</option>
+                    <option value="Green">✓ أخضر: دخول مقبول</option>
+                    <option value="Yellow">! أصفر: يجب الدفع أو قرب الانتهاء</option>
+                    <option value="Red">✕ أحمر: لا يوجد اشتراك ساري</option>
+                </select>
+
+                <select id="paymentFilter">
+                    <option value="ALL">جميع المدفوعات</option>
+                    <option value="UNPAID">يوجد مبلغ متبقي</option>
+                    <option value="PAID">مدفوع بالكامل</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="table-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>اسم العضو</th>
+                        <th>وقت الدخول</th>
+                        <th>حالة الاشتراك</th>
+                        <th>المدرب</th>
+                        <th>الحالة المالية</th>
+                    </tr>
+                </thead>
+                <tbody id="logsTableBody"></tbody>
+            </table>
+            <div id="emptyMessage" class="empty-state">جاري تحميل السجلات...</div>
+        </div>
+    </main>
+
+    <script>
+        const $ = id => document.getElementById(id);
+        const getToken = () => sessionStorage.getItem('jwt');
+        const ICONS = { Green: '✓', Yellow: '!', Red: '✕' };
+        let rawLogs = [];
+
+        if (!getToken()) { window.location.href = 'index.html'; }
+
+        function gymToday() {
+            return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Damascus' });
+        }
+        $('checkinDate').value = gymToday();
+
+        function el(tag, cls, text) {
+            const e = document.createElement(tag);
+            if (cls) { e.className = cls; }
+            if (text !== undefined) { e.textContent = text; }
+            return e;
+        }
+
+        function timeText(iso) {
+            const d = new Date(/Z$|[+-]\d\d:\d\d$/.test(iso) ? iso : iso + 'Z');
+            return d.toLocaleTimeString('ar-SY-u-nu-latn', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Asia/Damascus' });
+        }
+
+        async function fetchLogs(quiet) {
+            if (!quiet) {
+                $('emptyMessage').style.display = 'block';
+                $('emptyMessage').textContent = 'جاري التحميل...';
+                $('logsTableBody').innerHTML = '';
+            }
+            try {
+                const res = await fetch('/api/CheckIn/logs?date=' + $('checkinDate').value, {
+                    headers: { 'Authorization': 'Bearer ' + getToken() }
+                });
+                if (res.status === 401) { sessionStorage.removeItem('jwt'); window.location.href = 'index.html'; return; }
+                if (!res.ok) { throw new Error('HTTP ' + res.status); }
+                rawLogs = await res.json();
+                renderTable();
+            } catch (err) {
+                console.error('Failed to load check-in logs:', err);
+                if (!quiet) { $('emptyMessage').textContent = 'تعذر جلب سجل الحضور من الخادم'; }
+            }
+        }
+
+        function renderTable() {
+            const statusF = $('statusFilter').value;
+            const paymentF = $('paymentFilter').value;
+
+            const filtered = rawLogs.filter(function (item) {
+                const owed = item.amountOwedNow;
+                const matchStatus = statusF === 'ALL' || item.result === statusF;
+                const matchPayment = paymentF === 'ALL' ||
+                    (paymentF === 'UNPAID' && owed != null && owed > 0) ||
+                    (paymentF === 'PAID' && owed != null && owed === 0);
+                return matchStatus && matchPayment;
+            });
+
+            const tbody = $('logsTableBody');
+            tbody.innerHTML = '';
+
+            if (filtered.length === 0) {
+                $('emptyMessage').style.display = 'block';
+                $('emptyMessage').textContent = 'لا توجد سجلات حضور مطابقة للفلاتر المحددة';
+                return;
+            }
+            $('emptyMessage').style.display = 'none';
+
+            filtered.forEach(function (log) {
+                const tr = document.createElement('tr');
+
+                const tdName = el('td');
+                tdName.appendChild(el('strong', '', log.memberName));
+
+                const tdTime = el('td', '', timeText(log.checkedInAtUtc));
+
+                let label = (ICONS[log.result] || '?') + ' ' + (log.planName || 'بدون اشتراك');
+                if (log.planDays === 1) { label += ' · يومي'; }
+                if (log.withProgram) { label += ' · مع برنامج'; }
+                const tdStatus = el('td');
+                tdStatus.appendChild(el('span', 'status-badge ' + log.result, label));
+
+                const tdCoach = el('td', '', log.planName == null ? '—' : (log.coachName || 'بدون مدرب'));
+
+                const tdPayment = el('td');
+                const owed = log.amountOwedNow;
+                if (owed == null) {
+                    tdPayment.textContent = '—';
+                } else if (owed > 0) {
+                    const s = el('span', '', 'المتبقي الآن: ' + owed + ' ل.س');
+                    s.style.color = 'var(--danger)';
+                    s.style.fontWeight = '700';
+                    tdPayment.appendChild(s);
+                } else {
+                    const s = el('span', '', 'مدفوع بالكامل');
+                    s.style.color = 'var(--success)';
+                    tdPayment.appendChild(s);
+                }
+
+                tr.appendChild(tdName);
+                tr.appendChild(tdTime);
+                tr.appendChild(tdStatus);
+                tr.appendChild(tdCoach);
+                tr.appendChild(tdPayment);
+                tbody.appendChild(tr);
+            });
+        }
+
+        $('checkinDate').addEventListener('change', function () { fetchLogs(false); });
+        $('statusFilter').addEventListener('change', renderTable);
+        $('paymentFilter').addEventListener('change', renderTable);
+        setInterval(function () {
+            if (!document.hidden && $('checkinDate').value === gymToday()) { fetchLogs(true); }
+        }, 10000);
+
+        fetchLogs(false);
+    </script>
+
+</body>
+</html>

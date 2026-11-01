@@ -16,7 +16,7 @@ namespace GymManagementSystem.Core.Entities
 
         public bool WithCoach { get; set; }
 
-
+        public decimal ProgramPrice { get; set; }
 
         public List<Subscription> Subscriptions { get; set; } = new();
 

@@ -1,6 +1,7 @@
 ﻿using GymManagementSystem.Core.Entities;
+using GymManagementSystem.Core.Enums;
 using GymManagementSystem.Core.Helpers;
-using GymManagementSystem.Core.Models;
+using GymManagementSystem.Core.Models.Responses;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -21,7 +22,7 @@ namespace GymManagementSystem.Infrastructure.Services
         }
 
         public async Task<(SubscriptionResponse? Subscription, string? Error)> CreateAsync(
-     int memberId, int planId, int createdByUserId)
+     int memberId, int planId, int createdByUserId, int? coachId, bool WithProgram)
         {
             var member = await _db.Members.FirstOrDefaultAsync(m => m.Id == memberId);
             if (member is null) return (null, "Unknown member");
@@ -30,6 +31,27 @@ namespace GymManagementSystem.Infrastructure.Services
             var plan = await _db.Plans.FirstOrDefaultAsync(p => p.Id == planId);
             if (plan is null) return (null, "Unknown plan");
 
+
+            Coach? coach = null;
+            if (plan.WithCoach)
+            {
+                if (coachId is null) return (null, "Coach is required for this plan");
+                coach = await _db.Coaches.FirstOrDefaultAsync(c => c.Id == coachId && c.IsActive);
+                if (coach is null) return (null, "Unknown Coach");
+
+
+            }
+
+           
+
+
+            else if (coachId is not null)
+                return (null, "This plan has no coach");
+
+            if (WithProgram && plan.ProgramPrice <= 0)
+                return (null, "Program is not available for this plan");
+
+            var price = plan.Price + (WithProgram ? plan.ProgramPrice : 0m);
 
             DateOnly? lastEnd = await _db.Subscriptions.Where(s => s.MemberId == memberId)
                 .MaxAsync(s => (DateOnly?)s.EndDate);
@@ -76,7 +98,10 @@ namespace GymManagementSystem.Infrastructure.Services
                 PlanId = planId,
                 StartDate = start,
                 EndDate = end,
-                PriceCharged = plan.Price,
+                PriceCharged = price,
+                CoachId = coach?.Id,
+                WithProgram = WithProgram,
+
                 CreatedByUserId = createdByUserId
             };
 
@@ -84,7 +109,8 @@ namespace GymManagementSystem.Infrastructure.Services
 
             await _db.SaveChangesAsync();
 
-            return (new SubscriptionResponse(subscription.Id, memberId, plan.Name, start, end, plan.Price), null);
+
+            return (new SubscriptionResponse(subscription.Id, memberId, plan.Name, start, end, price, coach?.Name, WithProgram), null);
 
         }
 

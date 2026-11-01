@@ -1,7 +1,7 @@
 
 using GymManagementSystem.Core.Entities;
 using GymManagementSystem.Core.Enums;
-
+using System.Threading.RateLimiting;
 using GymManagementSystem.Api.Models;
 using GymManagementSystem.Infrastructure;
 using GymManagementSystem.Infrastructure.Services;
@@ -70,10 +70,24 @@ builder.Services.AddScoped<SubscriptionService>();
 
 builder.Services.AddScoped<PaymentService>();
 
+
+builder.Services.AddScoped<CoachService>();
+
 builder.Services.AddAuthorization();
 
-
-
+builder.Services.AddRateLimiter(o =>
+{
+    o.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    o.AddPolicy("login", httpcontext =>
+    RateLimitPartition.GetFixedWindowLimiter(
+        httpcontext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = 5,
+            Window = TimeSpan.FromMinutes(1),
+            QueueLimit = 0
+        }));
+});
 
 
 var app = builder.Build();
@@ -86,9 +100,13 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseDefaultFiles();
+app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseAuthorization();
+app.UseRateLimiter();
+
 
 app.MapControllers();
 

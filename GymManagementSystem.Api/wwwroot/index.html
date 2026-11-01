@@ -1,0 +1,590 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>نظام إدارة اللياقة · بوابة الفحص الذكي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #060911;
+            --surface: #0f172a;
+            --border: #334155;
+            --border-focus: #3b82f6;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --radius-lg: 20px;
+            --radius-md: 12px;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: all 0.25s ease;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--bg-base);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 36px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        header strong {
+            font-size: 1.25rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        main {
+            flex: 1;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .auth-container {
+            max-width: 440px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            width: 100%;
+            align-items: stretch;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-top: 0;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input, button {
+            font: inherit;
+            width: 100%;
+            padding: 15px 18px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            background: #0b1329;
+            color: var(--text-main);
+            margin-block-end: 16px;
+        }
+
+            input:focus {
+                outline: none;
+                border-color: var(--border-focus);
+                box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+            }
+
+        button {
+            background: var(--primary);
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
+        }
+
+            button:hover {
+                background: var(--primary-hover);
+                transform: translateY(-1px);
+            }
+
+            button.ghost {
+                background: transparent;
+                border: 1px solid var(--border);
+                width: auto;
+                margin: 0;
+                padding: 8px 18px;
+                font-size: 0.92rem;
+                color: var(--text-muted);
+                box-shadow: none;
+            }
+
+                button.ghost:hover {
+                    background: rgba(255, 255, 255, 0.05);
+                    color: var(--text-main);
+                }
+
+        .muted {
+            color: var(--text-muted);
+            font-size: .92rem;
+            margin: 0 0 16px;
+            text-align: center;
+        }
+
+        .error {
+            color: var(--danger);
+            font-size: 0.92rem;
+            margin: 8px 0 0;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        #reader {
+            width: 100%;
+            min-height: 280px;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            margin-block-end: 16px;
+            border: 2px dashed var(--border);
+            background: #050811;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            #reader video {
+                width: 100% !important;
+                height: auto !important;
+                object-fit: cover;
+                border-radius: var(--radius-md);
+            }
+
+            #reader:empty {
+                display: none;
+            }
+
+        .panel {
+            border-radius: var(--radius-lg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px 30px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            min-height: 100%;
+        }
+
+            .panel.Green {
+                background: linear-gradient(135deg, #064e3b, #047857);
+                color: #fff;
+                border-color: #10b981;
+            }
+
+            .panel.Yellow {
+                background: linear-gradient(135deg, #78350f, #b45309);
+                color: #fff;
+                border-color: #f59e0b;
+            }
+
+            .panel.Red {
+                background: linear-gradient(135deg, #7f1d1d, #b91c1c);
+                color: #fff;
+                border-color: #ef4444;
+            }
+
+        #icon {
+            font-size: 5.5rem;
+            line-height: 1;
+            margin-bottom: 16px;
+        }
+
+        #message {
+            font-size: 2.4rem;
+            font-weight: 900;
+            margin-block-start: 8px;
+        }
+
+        #name {
+            font-size: 1.7rem;
+            font-weight: 700;
+            margin-block-start: 16px;
+        }
+
+        #details {
+            font-size: 1.15rem;
+            margin-block-start: 12px;
+            opacity: .92;
+            line-height: 1.6;
+            white-space: pre-line;
+        }
+
+        .facts {
+            display: grid;
+            gap: 10px;
+            width: 100%;
+            max-width: 420px;
+            margin-block-start: 18px;
+        }
+
+        .fact {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,.12);
+            border-radius: 12px;
+            padding: 10px 14px;
+            text-align: start;
+        }
+
+            .fact .ic {
+                font-size: 1.5rem;
+                width: 2rem;
+                text-align: center;
+            }
+
+            .fact .lb {
+                display: block;
+                opacity: .75;
+                font-size: .85rem;
+            }
+
+            .fact strong {
+                font-size: 1.15rem;
+            }
+
+        .hidden {
+            display: none !important;
+        }
+
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        button.nav-add-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            width: auto;
+            margin: 0;
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #fff;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            button.nav-add-btn:hover {
+                background: linear-gradient(135deg, #059669, #047857);
+                transform: translateY(-1px);
+            }
+
+        button.nav-history-btn {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border: none;
+            width: auto;
+            margin: 0;
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #fff;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            button.nav-history-btn:hover {
+                background: linear-gradient(135deg, #1d4ed8, #1e40af);
+                transform: translateY(-1px);
+            }
+
+        button.nav-members-btn {
+            background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+            border: none;
+            width: auto;
+            margin: 0;
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #fff;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            button.nav-members-btn:hover {
+                background: linear-gradient(135deg, #7c3aed, #5b21b6);
+                transform: translateY(-1px);
+            }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-area">
+            <div class="logo-icon">⚡</div>
+            <strong>نظام إدارة نادي اوسكار · بوابة الفحص</strong>
+        </div>
+
+        <div class="header-actions">
+            <button id="navHistory" class="nav-history-btn hidden" onclick="location.href='checkin-history.html'">📊 سجل الحضور</button>
+            <button id="navAddMember" class="nav-add-btn hidden" onclick="location.href='add-member.html'">➕ إضافة عضو جديد</button>
+            <button id="membersBtn" class="nav-members-btn hidden" onclick="location.href='Members.html'">
+                👤 إدارة المشتركين
+            </button>
+            <button id="logout" class="ghost hidden">
+                تسجيل خروج
+            </button>
+        </div>
+    </header>
+    <main>
+        <section id="login" class="card auth-container">
+            <h2 class="card-title" style="justify-content: center;">تسجيل دخول الموظف</h2>
+            <input id="user" placeholder="اسم المستخدم" autocomplete="username">
+            <input id="pass" type="password" placeholder="كلمة المرور" autocomplete="current-password">
+            <button id="loginBtn">دخول للنظام</button>
+            <p id="loginError" class="error"></p>
+        </section>
+
+        <div id="scannerWrapper" class="dashboard-grid hidden">
+            <section class="card" style="margin: 0;">
+                <h3 class="card-title">📷 مسح رمز الاستجابة السريعة</h3>
+                <div id="reader"></div>
+                <button id="camBtn">تشغيل كاميرا المسح</button>
+                <p id="notice" class="muted"></p>
+                <input id="token" placeholder="أو أدخل أو امسح الرمز يدوياً هنا..." autocomplete="off">
+            </section>
+
+            <div id="result" class="panel">
+                <div id="icon">🛡️</div>
+                <div id="message">جاهز للمسح</div>
+                <div id="name"></div>
+                <div id="details">قم بتوجيه الكاميرا نحو رمز العضو أو أدخل الرمز يدوياً للتحقق من حالة الاشتراك</div>
+                <div id="facts" class="facts"></div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/html5-qrcode.min.js"></script>
+    <script>
+        const MESSAGES = { Welcome: 'أهلاً بك', PaymentDue: 'يجب الدفع', EndingSoon: 'الاشتراك ينتهي قريباً', NotValid: 'الاشتراك غير صالح', UnknownQr: 'الرمز غير معروف' };
+        const ICONS = { Green: '✓', Yellow: '!', Red: '✕' };
+        const $ = id => document.getElementById(id);
+        const getToken = () => sessionStorage.getItem('jwt');
+        let busy = false, resetTimer, qr = null, lastText = '', lastAt = 0;
+
+        function render() {
+            const loggedIn = !!getToken();
+            $('login').classList.toggle('hidden', loggedIn);
+            $('scannerWrapper').classList.toggle('hidden', !loggedIn);
+            $('logout').classList.toggle('hidden', !loggedIn);
+            $('navHistory').classList.toggle('hidden', !loggedIn);
+            $('navAddMember').classList.toggle('hidden', !loggedIn);
+            $('membersBtn').classList.toggle('hidden', !loggedIn);
+            if (loggedIn) { idle(); $('token').focus(); }
+        }
+
+        function idle() {
+            $('result').className = 'panel';
+            $('icon').textContent = '🛡️';
+            $('message').textContent = 'جاهز للمسح';
+            $('name').textContent = '';
+            $('details').textContent = 'قم بتوجيه الكاميرا نحو رمز العضو أو أدخل الرمز يدوياً للتحقق من حالة الاشتراك';
+            $('facts').innerHTML = '';
+        }
+
+        function addFact(icon, label, value) {
+            const row = document.createElement('div');
+            row.className = 'fact';
+            const ic = document.createElement('span');
+            ic.className = 'ic';
+            ic.textContent = icon;
+            const box = document.createElement('div');
+            const lb = document.createElement('span');
+            lb.className = 'lb';
+            lb.textContent = label;
+            const val = document.createElement('strong');
+            val.textContent = value;
+            box.appendChild(lb);
+            box.appendChild(val);
+            row.appendChild(ic);
+            row.appendChild(box);
+            $('facts').appendChild(row);
+        }
+
+        async function login() {
+            $('loginError').textContent = '';
+            try {
+                const res = await fetch('/api/Auth/Login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userName: $('user').value, password: $('pass').value })
+                });
+                if (res.status === 429) { $('loginError').textContent = 'محاولات كثيرة، انتظر دقيقة ثم أعد المحاولة'; return; }
+                if (!res.ok) { $('loginError').textContent = 'اسم المستخدم أو كلمة المرور غير صحيحة'; return; }
+                sessionStorage.setItem('jwt', (await res.json()).token);
+                $('pass').value = '';
+                render();
+            } catch (err) { $('loginError').textContent = 'تعذر الاتصال بالخادم'; }
+        }
+
+        async function logout() {
+            await stopCamera();
+            sessionStorage.removeItem('jwt');
+            render();
+        }
+
+        async function scan(qrToken) {
+            if (busy || !qrToken) return;
+            busy = true;
+            try {
+                const res = await fetch('/api/CheckIn/scan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
+                    body: JSON.stringify({ qrToken })
+                });
+                if (res.status === 401) { await logout(); return; }
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                show(await res.json());
+            } catch (err) {
+                console.error('scan failed:', err);
+                $('result').className = 'panel';
+                $('icon').textContent = '⚠';
+                $('message').textContent = 'تعذر الاتصال بالخادم';
+                $('name').textContent = '';
+                $('details').textContent = 'أعد المحاولة، ولا ترفض العضو بسبب هذا الخطأ';
+                $('facts').innerHTML = '';
+            } finally {
+                busy = false;
+                $('token').value = '';
+                if (!qr) $('token').focus();
+            }
+        }
+
+        function show(d) {
+            const status = d.result || 'Red';
+            const fmt = iso => new Date(iso + 'T00:00:00')
+                .toLocaleDateString('ar-SY-u-nu-latn', { day: 'numeric', month: 'long', year: 'numeric' });
+
+            $('result').className = 'panel ' + status;
+            $('icon').textContent = ICONS[status] || '✕';
+            $('message').textContent = MESSAGES[d.messageCode] || 'نتيجة الفحص';
+            $('name').textContent = d.memberName || '';
+            $('facts').innerHTML = '';
+
+            if (d.planName) {
+                $('details').textContent = '';
+                addFact('📋', 'الاشتراك', d.planName);
+                addFact('⏳', 'المدة', d.planDays === 1 ? 'يومي' : d.planDays + ' يوم');
+                addFact('🏋️', 'التدريب', d.withCoach ? 'مع مدرب' : 'بدون مدرب');
+                if (d.coachName) addFact('👤', 'المدرب', d.coachName);
+                addFact('📝', 'البرنامج', d.withProgram ? 'مع برنامج' : 'بدون برنامج');
+                addFact('📅', 'تاريخ البداية', fmt(d.startDate));
+                addFact('🏁', 'تاريخ الانتهاء', fmt(d.endDate));
+                addFact('💵', 'الدفع', d.amountOwed > 0 ? 'المتبقي: ' + d.amountOwed : 'مدفوع بالكامل');
+            } else {
+                $('details').textContent = d.memberName ? 'لا يوجد اشتراك ساري حالياً' : '';
+            }
+
+            if (navigator.vibrate) navigator.vibrate(status === 'Green' ? 80 : [120, 60, 120]);
+            clearTimeout(resetTimer);
+            resetTimer = setTimeout(idle, 10000);
+        }
+
+        function onCode(text) {
+            const now = Date.now();
+            if (text === lastText && now - lastAt < 10000) return;
+            lastText = text; lastAt = now;
+            scan(text.trim());
+        }
+
+        async function startCamera() {
+            $('notice').textContent = '';
+            if (!window.Html5Qrcode) { $('notice').textContent = 'مكتبة الكاميرا غير محملة'; return; }
+            try {
+                if (!qr) qr = new Html5Qrcode('reader');
+                if (qr.isScanning) return;
+                await qr.start({ facingMode: 'environment' }, { fps: 15, qrbox: { width: 250, height: 250 } }, onCode, () => { });
+                $('camBtn').textContent = 'إيقاف الكاميرا';
+            } catch (err) {
+                console.error('camera failed:', err);
+                $('notice').textContent = 'تعذر تشغيل الكاميرا';
+                qr = null;
+            }
+        }
+
+        async function stopCamera() {
+            if (!qr) return;
+            try { if (qr.isScanning) await qr.stop(); await qr.clear(); } catch (e) { }
+            qr = null;
+            $('camBtn').textContent = 'تشغيل كاميرا المسح';
+        }
+
+        $('loginBtn').addEventListener('click', login);
+        $('pass').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+        $('token').addEventListener('keydown', e => { if (e.key === 'Enter') scan($('token').value.trim()); });
+        $('camBtn').addEventListener('click', () => qr && qr.isScanning ? stopCamera() : startCamera());
+        $('logout').addEventListener('click', logout);
+        render();
+    </script>
+</body>
+</html>

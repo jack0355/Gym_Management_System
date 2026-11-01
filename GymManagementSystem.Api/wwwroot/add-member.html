@@ -1,0 +1,575 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>إضافة عضو جديد · لوحة الإدارة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #060911;
+            --surface: #0f172a;
+            --border: #334155;
+            --border-focus: #3b82f6;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #3b82f6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --radius-lg: 20px;
+            --radius-md: 12px;
+            font-family: 'Tajawal', Tahoma, Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: all 0.25s ease;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--bg-base);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-image: radial-gradient(circle at 50% 10%, rgba(59, 130, 246, 0.08) 0%, transparent 60%);
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            width: 100%;
+            max-width: 520px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+            .card-header .icon-badge {
+                width: 50px;
+                height: 50px;
+                background: rgba(16, 185, 129, 0.15);
+                color: var(--success);
+                border-radius: 14px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.5rem;
+                margin-bottom: 12px;
+                border: 1px solid rgba(16, 185, 129, 0.3);
+            }
+
+        h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 0.92rem;
+            margin: 6px 0 0;
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+        }
+
+        input, select {
+            font: inherit;
+            width: 100%;
+            padding: 15px 18px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            background: #0b1329;
+            color: var(--text-main);
+        }
+
+            input:focus, select:focus {
+                outline: none;
+                border-color: var(--border-focus);
+                box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+            }
+
+            input:disabled, select:disabled {
+                opacity: .6;
+            }
+
+        .check-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+            .check-group input[type=checkbox] {
+                width: 22px;
+                height: 22px;
+                padding: 0;
+            }
+
+            .check-group label {
+                margin: 0;
+                color: var(--text-main);
+            }
+
+        .hint {
+            color: var(--text-muted);
+            font-size: .85rem;
+            margin: 8px 0 0;
+        }
+
+        button {
+            font: inherit;
+            width: 100%;
+            padding: 16px;
+            border-radius: var(--radius-md);
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+            button:disabled {
+                opacity: .6;
+                cursor: wait;
+            }
+
+            button.primary-btn {
+                background: var(--success);
+                color: #fff;
+                box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
+            }
+
+                button.primary-btn:hover {
+                    background: #059669;
+                    transform: translateY(-1px);
+                }
+
+            button.secondary-btn {
+                background: transparent;
+                border: 1px solid var(--border);
+                color: var(--text-muted);
+                margin-top: 10px;
+                box-shadow: none;
+            }
+
+                button.secondary-btn:hover {
+                    background: rgba(255, 255, 255, 0.05);
+                    color: var(--text-main);
+                    border-color: var(--text-muted);
+                }
+
+        .error {
+            color: var(--danger);
+            font-size: 0.92rem;
+            text-align: center;
+            font-weight: 500;
+            margin-top: 12px;
+        }
+
+        .success-box {
+            margin-top: 24px;
+            background: #070a12;
+            padding: 24px;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            text-align: center;
+        }
+
+            .success-box h4 {
+                color: var(--success);
+                margin: 0 0 8px;
+                font-size: 1.1rem;
+            }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: .95rem;
+            text-align: start;
+        }
+
+            .row span:first-child {
+                color: var(--text-muted);
+            }
+
+        #qrImg {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 16px auto;
+            background: #fff;
+            padding: 12px;
+            border-radius: 12px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="card-header">
+            <div class="icon-badge">👤</div>
+            <h2>تسجيل مشترك جديد</h2>
+            <p class="subtitle">بيانات العضو والاشتراك والدفعة الأولى</p>
+        </div>
+
+        <div class="input-group">
+            <label for="memberName">الاسم الكامل</label>
+            <input id="memberName" maxlength="100" placeholder="مثال: أحمد محمد" autocomplete="off">
+        </div>
+
+        <div class="input-group">
+            <label for="memberPhone">رقم الهاتف</label>
+            <input id="memberPhone" maxlength="20" inputmode="tel" placeholder="09xxxxxxxx" autocomplete="off">
+        </div>
+
+        <div class="input-group">
+            <label for="memberGender">الجنس</label>
+            <select id="memberGender">
+                <option value="Male">ذكر</option>
+                <option value="Female">أنثى</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label for="memberPlan">الاشتراك</label>
+            <select id="memberPlan"><option value="">بدون اشتراك الآن</option></select>
+        </div>
+
+        <div id="coachGroup" class="input-group hidden">
+            <label for="memberCoach">المدرب</label>
+            <select id="memberCoach"><option value="">اختر المدرب</option></select>
+        </div>
+
+        <div id="programGroup" class="check-group hidden">
+            <input type="checkbox" id="memberProgram">
+            <label for="memberProgram" id="programLabel">برنامج تدريبي</label>
+        </div>
+
+        <div class="input-group">
+            <label for="memberPaid">المبلغ المدفوع الآن (ل.س)</label>
+            <input id="memberPaid" type="number" min="0" step="0.01" inputmode="decimal" disabled>
+            <p id="totalHint" class="hint"></p>
+        </div>
+
+        <button id="saveBtn" class="primary-btn">تسجيل العضو وتوليد الرمز ⚡</button>
+        <button id="resetBtn" class="secondary-btn hidden">بدء من جديد</button>
+        <button class="secondary-btn" onclick="location.href='index.html'">← العودة إلى بوابة الفحص</button>
+
+        <p id="formError" class="error"></p>
+
+        <div id="successBox" class="success-box hidden">
+            <h4>✨ تم التسجيل بنجاح</h4>
+            <p id="doneName" style="font-weight:700; margin:0 0 12px;"></p>
+            <div id="summary"></div>
+            <img id="qrImg" alt="رمز QR للعضو">
+            <p style="font-size:0.85rem; color:var(--text-muted); margin:0 0 12px;">هذا الرمز هو مفتاح دخول العضو. أرسله له وحده ولا تنشره.</p>
+            <button id="shareBtn" class="secondary-btn hidden">مشاركة الصورة</button>
+            <button id="downloadBtn" class="secondary-btn">تحميل الصورة</button>
+            <button id="againBtn" class="secondary-btn">إضافة عضو آخر</button>
+        </div>
+    </div>
+
+    <script>
+        const $ = id => document.getElementById(id);
+        const getToken = () => sessionStorage.getItem('jwt');
+        let plans = [], coaches = [];
+        let reg = { member: null, subscription: null, payment: null };
+        let qrBlob = null, qrUrl = null;
+
+        if (!getToken()) { window.location.href = 'index.html'; }
+
+        function api(path, options) {
+            const opts = options || {};
+            const headers = Object.assign({ 'Authorization': 'Bearer ' + getToken() }, opts.headers);
+            return fetch(path, Object.assign({}, opts, { headers: headers }));
+        }
+
+        function fmt(iso) {
+            return new Date(iso + 'T00:00:00')
+                .toLocaleDateString('ar-SY-u-nu-latn', { day: 'numeric', month: 'long', year: 'numeric' });
+        }
+
+        function addRow(label, value) {
+            const row = document.createElement('div');
+            row.className = 'row';
+            const a = document.createElement('span');
+            a.textContent = label;
+            const b = document.createElement('strong');
+            b.textContent = value;
+            row.appendChild(a);
+            row.appendChild(b);
+            $('summary').appendChild(row);
+        }
+
+        function lockMember(locked) {
+            ['memberName', 'memberPhone', 'memberGender'].forEach(function (id) { $(id).disabled = locked; });
+            $('resetBtn').classList.toggle('hidden', !locked);
+        }
+
+        function lockPlan(locked) {
+            ['memberPlan', 'memberCoach', 'memberProgram'].forEach(function (id) { $(id).disabled = locked; });
+        }
+
+        function currentPlan() {
+            return plans.find(function (x) { return String(x.id) === $('memberPlan').value; });
+        }
+
+        function updateForm() {
+            const p = currentPlan();
+            const hasProgram = !!(p && p.programPrice > 0);
+            $('coachGroup').classList.toggle('hidden', !(p && p.withCoach));
+            $('programGroup').classList.toggle('hidden', !hasProgram);
+            if (!(p && p.withCoach)) { $('memberCoach').value = ''; }
+            if (!hasProgram) { $('memberProgram').checked = false; }
+            $('programLabel').textContent = hasProgram ? 'برنامج تدريبي (+' + p.programPrice + ' ل.س)' : 'برنامج تدريبي';
+            const total = p ? p.price + ($('memberProgram').checked ? p.programPrice : 0) : 0;
+            $('memberPaid').disabled = !p;
+            $('memberPaid').value = p ? total : '';
+            $('totalHint').textContent = p ? 'إجمالي السعر: ' + total + ' ل.س' : '';
+        }
+
+        async function loadPlans() {
+            try {
+                const res = await api('/api/Plans');
+                if (res.status === 401) { sessionStorage.removeItem('jwt'); window.location.href = 'index.html'; return; }
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                plans = await res.json();
+                plans.forEach(function (p) {
+                    const o = document.createElement('option');
+                    o.value = p.id;
+                    o.textContent = p.name + ' — ' + (p.durationInDays === 1 ? 'يومي' : p.durationInDays + ' يوم') + ' — ' + p.price + ' ل.س';
+                    $('memberPlan').appendChild(o);
+                });
+            } catch (err) {
+                console.error('plans failed:', err);
+                $('formError').textContent = 'تعذر تحميل قائمة الاشتراكات';
+            }
+        }
+
+        async function loadCoaches() {
+            try {
+                const res = await api('/api/Coaches');
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                coaches = await res.json();
+                coaches.forEach(function (c) {
+                    const o = document.createElement('option');
+                    o.value = c.id;
+                    o.textContent = c.name;
+                    $('memberCoach').appendChild(o);
+                });
+            } catch (err) {
+                console.error('coaches failed:', err);
+                $('formError').textContent = 'تعذر تحميل قائمة المدربين';
+            }
+        }
+
+
+        function fillcoahces() {
+            const gender = $('memberGender').value;
+            const select = $('memberCoach');
+            select.innerHTML = '';
+            select.appendChild(new Option('اختر المدرب', ''));
+            coaches
+                .filter(function (c) { return c.gender === gender; })
+                .forEach(function (c) { select.appendChild(new option(c.name, c, id)); });
+        }
+
+        async function explain(name, res) {
+            let text = '';
+            try { text = await res.text(); } catch (e) { }
+            console.error(name + ' failed: HTTP ' + res.status + ' ' + text);
+            const known = [
+                ['already registered', 'هذا العضو مسجل مسبقاً'],
+                ['renewal', 'للعضو تجديد قادم بالفعل'],
+                ['inactive', 'العضو غير مفعّل'],
+                ['Unknown member', 'العضو غير موجود'],
+                ['Unknown plan', 'الاشتراك غير موجود'],
+                ['Coach is required', 'اختر المدرب'],
+                ['Unknown coach', 'المدرب غير موجود'],
+                ['no coach', 'هذا الاشتراك بدون مدرب'],
+                ['Program is not available', 'البرنامج غير متاح لهذا الاشتراك'],
+                ['more than what is owed', 'المبلغ أكبر من المطلوب']
+                ['same gender', 'يجب أن يكون المدرب من نفس جنس العضو'],
+            ];
+            for (let i = 0; i < known.length; i++) {
+                if (text.indexOf(known[i][0]) !== -1) { return known[i][1]; }
+            }
+            if (res.status === 403) { return 'هذه العملية للمالك فقط'; }
+            if (res.status === 400) { return 'بيانات غير صالحة، التفاصيل في Console (F12)'; }
+            return 'خطأ في الخادم (' + res.status + ')';
+        }
+
+        async function step(name, path, body) {
+            const res = await api(path, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            if (res.status === 401) {
+                sessionStorage.removeItem('jwt');
+                window.location.href = 'index.html';
+                throw new Error('LOGIN');
+            }
+            if (!res.ok) {
+                const e = new Error(await explain(name, res));
+                e.expected = true;
+                throw e;
+            }
+            return res.json();
+        }
+
+        function qrFile() {
+            return new File([qrBlob], 'member-' + reg.member.id + '.png', { type: 'image/png' });
+        }
+
+        function canShare() {
+            try { return !!(navigator.canShare && navigator.canShare({ files: [qrFile()] })); }
+            catch (e) { return false; }
+        }
+
+        async function showResult() {
+            const qrRes = await api('/api/Members/' + reg.member.id + '/qr');
+            if (!qrRes.ok) throw new Error('QR HTTP ' + qrRes.status);
+            qrBlob = await qrRes.blob();
+            if (qrUrl) URL.revokeObjectURL(qrUrl);
+            qrUrl = URL.createObjectURL(qrBlob);
+            $('qrImg').src = qrUrl;
+            $('doneName').textContent = reg.member.fullName;
+
+            $('summary').innerHTML = '';
+            if (reg.subscription) {
+                const s = reg.subscription;
+                const remaining = reg.payment ? reg.payment.amountOwedAfter : s.priceCharged;
+                addRow('الاشتراك', s.planName);
+                if (s.coachName) { addRow('المدرب', s.coachName); }
+                addRow('البرنامج', s.withProgram ? 'مع برنامج' : 'بدون برنامج');
+                addRow('من', fmt(s.startDate));
+                addRow('إلى', fmt(s.endDate));
+                addRow('السعر', s.priceCharged + ' ل.س');
+                addRow('المدفوع', (s.priceCharged - remaining) + ' ل.س');
+                addRow('المتبقي', remaining + ' ل.س');
+            } else {
+                addRow('الاشتراك', 'لم يُنشأ اشتراك بعد');
+            }
+            $('shareBtn').classList.toggle('hidden', !canShare());
+            $('successBox').classList.remove('hidden');
+        }
+
+        async function register() {
+            $('formError').textContent = '';
+            const fullName = $('memberName').value.trim();
+            const phone = $('memberPhone').value.trim();
+            const planId = $('memberPlan').value;
+            const plan = currentPlan();
+            const coachId = $('memberCoach').value;
+            const amount = planId ? (parseFloat($('memberPaid').value) || 0) : 0;
+
+            if (!reg.member && (!fullName || !phone)) {
+                $('formError').textContent = 'الاسم ورقم الهاتف مطلوبان';
+                return;
+            }
+            if (plan && plan.withCoach && !coachId && !reg.subscription) {
+                $('formError').textContent = 'اختر المدرب';
+                return;
+            }
+
+
+            $('memberGender').addEventListener('Change', fillcoahces);
+            $('saveBtn').disabled = true;
+            try {
+                if (!reg.member) {
+                    reg.member = await step('member', '/api/Members', { fullName: fullName, phone: phone, gender: $('memberGender').value });
+                    lockMember(true);
+                }
+                if (planId && !reg.subscription) {
+                    reg.subscription = await step('subscription', '/api/Subscriptions', {
+                        memberId: reg.member.id,
+                        planId: Number(planId),
+                        coachId: coachId ? Number(coachId) : null,
+                        withProgram: $('memberProgram').checked
+                    });
+                    lockPlan(true);
+                }
+                if (reg.subscription && amount > 0 && !reg.payment) {
+                    reg.payment = await step('payment', '/api/Payments', { subscriptionId: reg.subscription.id, amount: amount, note: null });
+                }
+                await showResult();
+            } catch (err) {
+                if (err.message === 'LOGIN') { return; }
+                console.error('register failed:', err);
+                const saved = reg.member ? ' — تم حفظ العضو، صحّح المطلوب واضغط حفظ لإكمال الباقي' : '';
+                $('formError').textContent = err.expected ? err.message + saved : 'تعذر الاتصال بالخادم' + saved;
+            } finally {
+                $('saveBtn').disabled = false;
+            }
+        }
+
+        async function share() {
+            try { await navigator.share({ files: [qrFile()], title: 'رمز الدخول' }); }
+            catch (e) { /* the share sheet was closed */ }
+        }
+
+        function download() {
+            const a = document.createElement('a');
+            a.href = qrUrl;
+            a.download = 'member-' + reg.member.id + '.png';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        }
+
+        function reset() {
+            reg = { member: null, subscription: null, payment: null };
+            lockMember(false);
+            lockPlan(false);
+            ['memberName', 'memberPhone'].forEach(function (id) { $(id).value = ''; });
+            $('memberPlan').value = '';
+            $('memberCoach').value = '';
+            $('memberProgram').checked = false;
+            updateForm();
+            $('formError').textContent = '';
+            $('qrImg').removeAttribute('src');
+            if (qrUrl) { URL.revokeObjectURL(qrUrl); qrUrl = null; }
+            qrBlob = null;
+            $('successBox').classList.add('hidden');
+            $('memberName').focus();
+        }
+
+        $('memberPlan').addEventListener('change', updateForm);
+        $('memberProgram').addEventListener('change', updateForm);
+        $('saveBtn').addEventListener('click', register);
+        $('resetBtn').addEventListener('click', reset);
+        $('againBtn').addEventListener('click', reset);
+        $('shareBtn').addEventListener('click', share);
+        $('downloadBtn').addEventListener('click', download);
+        loadPlans();
+        loadCoaches();
+    </script>
+</body>
+</html>

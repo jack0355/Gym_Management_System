@@ -1,0 +1,1 @@
+﻿public record MemberListItem(int Id, string FullName, string Phone, bool IsActive);

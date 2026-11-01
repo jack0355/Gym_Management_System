@@ -16,6 +16,8 @@ namespace GymManagementSystem.Infrastructure
         public DbSet<CheckIn> CheckIns => Set<CheckIn>();
         public DbSet<User> Users => Set<User>();
 
+        public DbSet<Coach> Coaches => Set<Coach>();
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Notes From me : Fast Scan Look up , what i mean --> databases refuses duplicated tokens
@@ -71,6 +73,18 @@ namespace GymManagementSystem.Infrastructure
             modelBuilder.Entity<User>().Property(u => u.UserName).HasMaxLength(50);
             modelBuilder.Entity<User>().Property(u => u.PasswordHash).HasMaxLength(200);
             modelBuilder.Entity<Plan>().Property(p => p.Name).HasMaxLength(100);
+
+            modelBuilder.Entity<Coach>().Property(c => c.Name).HasMaxLength(100);
+            modelBuilder.Entity<Plan>().Property(p => p.ProgramPrice).HasPrecision(18, 2);
+            modelBuilder.Entity<Subscription>()
+                .HasOne(s => s.Coach).WithMany()
+                .HasForeignKey(s => s.CoachId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<CheckIn>()
+                .HasOne(c => c.Subscription).WithMany()
+                .HasForeignKey(c => c.SubscriptionId)
+                .OnDelete(DeleteBehavior.Restrict);
 
 
         }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GymManagementSystem.Core.Models
+namespace GymManagementSystem.Core.Models.Responses
 {
    public record CreateMemberResponse(int Id , string FullName , string QrToken);
 }

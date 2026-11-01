@@ -3,7 +3,7 @@ using GymManagementSystem.Core.Rules;
 using Microsoft.EntityFrameworkCore;
 using GymManagementSystem.Infrastructure;
 using GymManagementSystem.Core.Helpers;
-
+using GymManagementSystem.Core.Models;
 public class CheckInService
 {
 
@@ -29,6 +29,7 @@ public class CheckInService
         var subscription = await _db.Subscriptions
             .Include(s => s.Plan)
             .Include(s => s.Payments)
+            .Include(s => s.Coach)
             .Where(s => s.MemberId == member.Id && s.StartDate <= today && s.EndDate >= today)
             .OrderByDescending(s => s.EndDate)
             .FirstOrDefaultAsync();
@@ -47,7 +48,12 @@ public class CheckInService
 
         var result = CheckInRules.Decide(member.IsActive, subscription, totalPaid, planDays, today);
 
-        _db.CheckIns.Add(new GymManagementSystem.Core.Entities.CheckIn { MemberId = member.Id, Result = result });
+        _db.CheckIns.Add(new GymManagementSystem.Core.Entities.CheckIn
+        {
+            MemberId = member.Id,
+            Result = result,
+            SubscriptionId = subscription?.Id
+        });
         await _db.SaveChangesAsync();
 
 
@@ -56,7 +62,13 @@ public class CheckInService
             Result = result,
             MemberName = member.FullName,
             PlanName = subscription?.Plan.Name ?? string.Empty,
+            StartDate = subscription?.StartDate,
             EndDate = subscription?.EndDate,
+            WithCoach = subscription?.Plan.WithCoach,
+            planDays = subscription?.Plan.DurationInDays,
+
+            CoachName = subscription?.Coach?.Name,
+            WithProgram = subscription?.WithProgram,
             AmountOwed = owed,
             MessageCode = result switch
             {
@@ -66,4 +78,30 @@ public class CheckInService
             }
         };
     }
+
+
+    public async Task<List<CheckInLogItem>> GetLogsByDateAsync(DateOnly day)
+    {
+        var from = GymClock.DayStartUtc(day);
+        var to = from.AddDays(1);
+
+        return await _db.CheckIns
+            .AsNoTracking()
+            .Where(c => c.CheckedInAtUtc >= from && c.CheckedInAtUtc < to)
+            .OrderByDescending(c => c.CheckedInAtUtc)
+            .Select(c => new CheckInLogItem(
+                c.Id,
+                c.Member.FullName,
+                c.CheckedInAtUtc,
+                c.Result,
+                c.Subscription != null ? c.Subscription.Plan.Name : null,
+                c.Subscription != null ? c.Subscription.Plan.DurationInDays : (int?)null,
+                c.Subscription != null && c.Subscription.Coach != null ? c.Subscription.Coach.Name : null,
+                 c.Subscription != null && c.Subscription.WithProgram,
+                c.Subscription != null
+                ? c.Subscription.PriceCharged - c.Subscription.Payments.Sum(p => p.Amount)
+                : (decimal?)null)).ToListAsync();                 
+    }
+
+
 }

@@ -19,7 +19,32 @@ ASP.NET Core 8 Web API · EF Core · PostgreSQL · HTML/CSS/JavaScript front-end
 Core holds entities and the colour rule (no database). Infrastructure holds EF Core and services. Api holds controllers and the static pages.
 
 ## Screenshots
-![Scan](docs/scan.png) ![Register](docs/register.png) ![History](docs/history.png)
+##[Log-in Page]
+<img width="1912" height="873" alt="تسجيل_دخول" src="https://github.com/user-attachments/assets/8610f42d-d82d-4d73-bdd1-7c8706248c0d" />
+
+##[main-page] 
+<img width="1910" height="885" alt="الصفحة الرئيسية" src="https://github.com/user-attachments/assets/110d14f1-93a1-4822-80bd-308bedd01eb8" />
+
+##[scan-page]
+<img width="1908" height="885" alt="صفحة البحث" src="https://github.com/user-attachments/assets/92cb1dbc-669b-4582-9271-3a0bb4f469b3" />
+
+##[Register-New-Member]
+<img width="1095" height="847" alt="تسجيل لاعب جديد" src="https://github.com/user-attachments/assets/cd63f699-716b-4b76-a8a5-8c09d2cbc826" />
+
+##[Successfully - Registered] , [QR Photo ] , [QR Image (Downloading -  sharing)]
+<img width="1095" height="847" alt="تسجيل لاعب جديد" src="https://github.com/user-attachments/assets/64dbe7ac-d055-46dd-a955-d27c2b61c0dc" />
+<img width="467" height="765" alt="QrToken" src="https://github.com/user-attachments/assets/d5d9e135-5ee1-471c-b933-0cdba85646cc" />
+<img width="520" height="276" alt="تحميل صورةQr" src="https://github.com/user-attachments/assets/d83ee24e-ed79-43ce-ae94-e44a932000bc" />
+
+##[Member - (Check-In) - Daily ]
+<img width="1897" height="877" alt="سجل الحضور " src="https://github.com/user-attachments/assets/012c6774-8c63-478a-916c-7ac237e35686" />
+
+##[Page - Members Table -Info]
+<img width="1893" height="873" alt="صفحة البحث عن العضو" src="https://github.com/user-attachments/assets/3a279ee7-7a21-4b7f-a679-01a69a53b91e" />
+
+
+
+
 
 ## Design decisions
 - The server decides the colour; the page only displays it

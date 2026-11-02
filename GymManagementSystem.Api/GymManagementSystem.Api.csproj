@@ -21,4 +21,9 @@
     <ProjectReference Include="..\GymManagementSystem.Infrastructure\GymManagementSystem.Infrastructure.csproj" />
   </ItemGroup>
 
+ 
+  <ItemGroup>
+    <Content Include="wwwroot\**" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

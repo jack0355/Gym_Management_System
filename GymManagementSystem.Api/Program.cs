@@ -1,4 +1,3 @@
-
 using GymManagementSystem.Core.Entities;
 using GymManagementSystem.Core.Enums;
 using System.Threading.RateLimiting;
@@ -12,14 +11,8 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Text.Json.Serialization;
 
-
-
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(o =>
 {
@@ -32,7 +25,6 @@ builder.Services.AddSwaggerGen(o =>
 
     o.AddSecurityRequirement(new OpenApiSecurityRequirement
     {{new OpenApiSecurityScheme
-
     {Reference = new OpenApiReference
     {
     Type = ReferenceType.SecurityScheme, Id ="Bearer"}}, Array.Empty<string>() }});
@@ -40,7 +32,6 @@ builder.Services.AddSwaggerGen(o =>
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
-
 
 builder.Services.AddScoped<CheckInService>();
 builder.Services.AddControllers()
@@ -61,16 +52,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:key"]!))
     });
 
-
 builder.Services.AddScoped<MemberService>();
-
 builder.Services.AddScoped<PlanService>();
-
 builder.Services.AddScoped<SubscriptionService>();
-
 builder.Services.AddScoped<PaymentService>();
-
-
 builder.Services.AddScoped<CoachService>();
 
 builder.Services.AddAuthorization();
@@ -89,26 +74,26 @@ builder.Services.AddRateLimiter(o =>
         }));
 });
 
-
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+
+
 app.UseDefaultFiles();
 app.UseStaticFiles();
 app.UseAuthentication();
-app.UseAuthorization();
-app.UseAuthorization();
+app.UseAuthorization(); 
 app.UseRateLimiter();
 
-
 app.MapControllers();
+
+
+app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
 
 if (app.Configuration.GetValue<bool>("RunMigrations"))
 {
@@ -122,13 +107,14 @@ using (var scope = app.Services.CreateScope())
     var hasher = scope.ServiceProvider.GetRequiredService<PasswordHasher>();
     var pass = builder.Configuration["Seed:OwnerPassword"];
     if (!string.IsNullOrEmpty(pass) && !db.Users.Any(u => u.UserName == "owner"))
-
     {
         db.Users.Add(new User { UserName = "owner", PasswordHash = hasher.Hash(pass), Role = StaffRole.Owner });
         db.SaveChanges();
-
     }
 }
 
+
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+app.Urls.Add($"http://0.0.0.0:{port}");
 
 app.Run();

@@ -1,10 +1,11 @@
-mkdir -p docs
-cat > docs/seed.sql <<'EOF'
-INSERT INTO "Coaches" ("Name","IsActive","Gender") VALUES
-  ('ãÍãæÏ', true, 1), ('ÃÈæ ÝÑÇÓ', true, 1), ('ÈÔÇÑ', true, 1),
-  ('ÎÊÇã', true, 2), ('ÏÚÇÁ', true, 2);
+DELETE FROM "Coaches";
+DELETE FROM "Plans";
+
+INSERT INTO "Coaches" ("Name","IsActive",gender) VALUES
+  ('Ù…Ø­Ù…ÙˆØ¯', true, 1), ('Ø£Ø¨Ùˆ ÙØ±Ø§Ø³', true, 1), ('Ø¨Ø´Ø§Ø±', true, 1),
+  ('Ø®ØªØ§Ù…', true, 2), ('Ø¯Ø¹Ø§Ø¡', true, 2);
+
 INSERT INTO "Plans" ("Name","DurationInDays","Price","WithCoach","ProgramPrice") VALUES
-  ('ÇÔÊÑÇß íæãí', 1, 100, false, 0),
-  ('ÇÔÊÑÇß ÔåÑí', 30, 1000, false, 800),
-  ('ÇÔÊÑÇß ÔåÑí ãÚ ãÏÑÈ', 30, 1200, true, 800);
-EOF
+  ('Ø§Ø´ØªØ±Ø§Ùƒ ÙŠÙˆÙ…ÙŠ', 1, 100, false, 0),
+  ('Ø§Ø´ØªØ±Ø§Ùƒ Ø´Ù‡Ø±ÙŠ', 30, 1000, false, 800),
+  ('Ø§Ø´ØªØ±Ø§Ùƒ Ø´Ù‡Ø±ÙŠ Ù…Ø¹ Ù…Ø¯Ø±Ø¨', 30, 1200, true, 800);

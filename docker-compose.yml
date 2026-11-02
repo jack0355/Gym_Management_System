@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: gym
+      POSTGRES_PASSWORD: gym_dev_password
+      POSTGRES_DB: gym_db
+    volumes:
+      - gymdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gym -d gym_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: GymManagementSystem.Api/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Default: Host=db;Port=5432;Database=gym_db;Username=gym;Password=gym_dev_password
+      Jwt__Key: ${JWT_KEY}
+      Jwt__Issuer: GymApi
+      Jwt__Audience: GymStaff
+      Seed__OwnerPassword: ${OWNER_PASSWORD}
+      RunMigrations: "true"
+    ports:
+      - "8080:8080"
+
+volumes:
+  gymdata:

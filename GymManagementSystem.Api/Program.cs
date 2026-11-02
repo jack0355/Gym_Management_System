@@ -110,6 +110,11 @@ app.UseRateLimiter();
 
 app.MapControllers();
 
+if (app.Configuration.GetValue<bool>("RunMigrations"))
+{
+    using var migrationScope = app.Services.CreateScope();
+    migrationScope.ServiceProvider.GetRequiredService<AppDbContext>().Database.Migrate();
+}
 
 using (var scope = app.Services.CreateScope())
 {

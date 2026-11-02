@@ -194,6 +194,63 @@
             text-align: center;
             color: var(--text-muted);
         }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                padding: 15px;
+                gap: 15px;
+            }
+
+                header > div {
+                    display: flex;
+                    flex-wrap: wrap;
+                    justify-content: center;
+                    gap: 10px;
+                    width: 100%;
+                }
+
+            .logo-area {
+                justify-content: center;
+                text-align: center;
+            }
+
+            header strong {
+                font-size: 1.1rem;
+            }
+
+            main {
+                padding: 15px;
+            }
+
+            .filter-card {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 15px;
+            }
+
+            .filter-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            input[type="date"], select {
+                width: 100%;
+            }
+
+            .table-card {
+                overflow-x: auto;
+            }
+
+            table {
+                white-space: nowrap;
+            }
+
+            td, th {
+                padding: 10px 12px;
+                font-size: 0.85rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -365,6 +422,5 @@
 
         fetchLogs(false);
     </script>
-
 </body>
 </html>

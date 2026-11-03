@@ -15,5 +15,14 @@ namespace GymManagementSystem.Api.Controllers
 
         [HttpGet]
         public async Task<ActionResult<List<CoachResponse>>> GetAll() => Ok(await _coaches.GetActiveAsync());
+
+        [HttpGet("stats")]
+        public async Task<IActionResult> GetStats()
+        {
+            var stats = await _coaches.GetCoachStatsAsync();
+
+
+            return Ok(stats);
+        }
     }
 }

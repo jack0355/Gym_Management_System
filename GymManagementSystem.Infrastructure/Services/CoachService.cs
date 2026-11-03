@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace GymManagementSystem.Infrastructure.Services
@@ -22,12 +21,24 @@ namespace GymManagementSystem.Infrastructure.Services
                 .AsNoTracking()
                 .Where(c => c.IsActive)
                 .OrderBy(c => c.Name)
-                .Select(c => new CoachResponse(c.Id, c.Name ,c.gender))
+                .Select(c => new CoachResponse(c.Id, c.Name, c.gender))
                 .ToListAsync();
         }
 
+        public async Task<List<CoachStatsResponse>> GetCoachStatsAsync()
+        {
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
 
+            return await _db.Coaches
+                .AsNoTracking()
+                .OrderBy(c => c.Name)
+                .Select(c => new CoachStatsResponse(
+                    c.Id,
+                    c.Name,
+                    c.gender, 
+                    _db.Subscriptions.Count(s => s.CoachId == c.Id && s.EndDate >= today)
+                ))
+                .ToListAsync();
+        }
     }
-
-
 }

@@ -1,4 +1,5 @@
-﻿using GymManagementSystem.Core.Enums;
+﻿using GymManagementSystem.Core.Entities;
+using GymManagementSystem.Core.Enums;
 
 namespace GymManagementSystem.Core.Models.Responses
 {

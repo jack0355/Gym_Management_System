@@ -200,7 +200,6 @@
         const getToken = () => sessionStorage.getItem('jwt');
 
         if (!getToken()) {
-        if (!getToken()) {
             window.location.href = 'index.html';
         }
 
@@ -229,7 +228,6 @@
                 }
 
                 coaches.forEach(c => {
-                    
                     const isMale = c.gender === 'Male' || c.gender === 1;
                     const genderText = isMale ? 'رجال' : 'نساء';
                     const icon = isMale ? '🏋️‍♂️' : '🤸‍♀️';
@@ -237,14 +235,14 @@
                     const card = document.createElement('div');
                     card.className = 'card';
                     card.innerHTML = `
-                        <div class="coach-icon">${icon}</div>
-                        <h2 class="coach-name">${c.name}</h2>
-                        <div class="coach-gender">يدرب فئة: ${genderText}</div>
-                        <div class="stat-box">
-                            <div class="stat-number">${c.activeMembers}</div>
-                            <div class="stat-label">مشترك نشط حالياً</div>
-                        </div>
-                    `;
+                            <div class="coach-icon">${icon}</div>
+                            <h2 class="coach-name">${c.name}</h2>
+                            <div class="coach-gender">يدرب فئة: ${genderText}</div>
+                            <div class="stat-box">
+                                <div class="stat-number">${c.activeMembers}</div>
+                                <div class="stat-label">مشترك نشط حالياً</div>
+                            </div>
+                        `;
                     grid.appendChild(card);
                 });
             } catch (err) {

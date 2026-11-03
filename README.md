@@ -1,73 +1,68 @@
-# Gym Management System
+# 🏋️ Gym Management System - QR Check-in & Membership
 
-Membership and QR check-in system built for a real gym. Staff register members, assign plans, take cash payments, and scan a member's QR code at the door to get an instant green / yellow / red result.
+A production-ready, full-stack membership and QR check-in system built for real-world gyms. Staff can register members, assign plans, track cash payments, and scan members' QR codes at the door for an instant green/yellow/red status result.
 
-## Features
-- QR check-in: green = valid and paid, yellow = payment due or ending within 5 days, red = no valid subscription
-- Members, plans, coaches (with a gender rule) and an optional training-program add-on
-- Subscriptions with a late-renewal rule: a late payer keeps their cycle
-- Cash payments with a "received by" audit trail; overpayments are refused
-- Check-in history by date, with colour, plan-type and coach filters
-- Arabic right-to-left staff screens; camera scanning or a USB scanner
-- JWT login with roles; passwords hashed with PBKDF2 and a per-user salt
+## 🚀 Live Demo
+*   **URL:** [https://gym-system.hostless.app](https://gym-system.hostless.app)
+*   *Credentials provided upon request.*
 
-## Tech stack
-ASP.NET Core 8 Web API · EF Core · PostgreSQL · HTML/CSS/JavaScript front-end
+## ✨ Key Features
+*   **QR Check-in:** Green = valid and paid, Yellow = payment due or ending within 5 days, Red = no valid subscription.
+*   **Offline Member Scanning:** Members only need a static photo of their QR code (no app or internet required for them). Staff scans it using the web app.
+*   **Smart Subscription Rules:** Late renewals keep the original cycle. Overpayments are refused. `PriceCharged` is locked at the time of sale to prevent history rewriting.
+*   **Cash Payment Auditing:** Tracks which staff member received the payment.
+*   **Advanced Filtering:** Check-in history by date, status color, plan type, and coach.
+*   **Arabic RTL Interface:** Fully responsive UI designed for mobile phones (camera scanning) and desktop (management).
+*   **Security:** JWT authentication, rate-limiting on login, and PBKDF2 password hashing with per-user salts.
 
-## Architecture
-`Api → Infrastructure → Core`: a layered design inspired by Clean Architecture.
-Core holds entities and the colour rule (no database). Infrastructure holds EF Core and services. Api holds controllers and the static pages.
+## 🛠️ Tech Stack
+*   **Backend:** C# / ASP.NET Core 8 Web API
+*   **Database:** PostgreSQL (via Entity Framework Core)
+*   **Frontend:** HTML5, CSS3, Vanilla JavaScript (served directly from the API)
+*   **Deployment:** Docker, Hostless.cloud, Supabase (PostgreSQL)
 
-## Screenshots
-##[Log-in Page]
-<img width="1912" height="873" alt="تسجيل_دخول" src="https://github.com/user-attachments/assets/8610f42d-d82d-4d73-bdd1-7c8706248c0d" />
+## 🏗️ Architecture
+Strictly layered following Clean Architecture principles: `Api → Infrastructure → Core`.
+*   **Core:** Holds domain entities and the pure business logic (e.g., the color status rule). Zero dependencies on databases or frameworks.
+*   **Infrastructure:** Holds EF Core `AppDbContext`, migrations, and external services (QR generation, password hashing).
+*   **Api:** Controllers, DTOs, middleware, and static frontend files.
 
-##[main-page] 
-<img width="1910" height="885" alt="الصفحة الرئيسية" src="https://github.com/user-attachments/assets/110d14f1-93a1-4822-80bd-308bedd01eb8" />
+## 📸 Screenshots
+### Login
+<img width="1912" height="873" alt="Login" src="https://github.com/user-attachments/assets/8610f42d-d82d-4d73-bdd1-7c8706248c0d" />
 
-##[scan-page]
-<img width="1908" height="885" alt="صفحة البحث" src="https://github.com/user-attachments/assets/92cb1dbc-669b-4582-9271-3a0bb4f469b3" />
+### Dashboard & Scanner
+<img width="1910" height="885" alt="Main" src="https://github.com/user-attachments/assets/110d14f1-93a1-4822-80bd-308bedd01eb8" />
+<img width="1908" height="885" alt="Scanner" src="https://github.com/user-attachments/assets/92cb1dbc-669b-4582-9271-3a0bb4f469b3" />
 
-##[Register-New-Member]
-<img width="1095" height="847" alt="تسجيل لاعب جديد" src="https://github.com/user-attachments/assets/cd63f699-716b-4b76-a8a5-8c09d2cbc826" />
+### Member Registration & QR
+<img width="1095" height="847" alt="Register" src="https://github.com/user-attachments/assets/cd63f699-716b-4b76-a8a5-8c09d2cbc826" />
+<img width="467" height="765" alt="QR" src="https://github.com/user-attachments/assets/d5d9e135-5ee1-471c-b933-0cdba85646cc" />
 
-##[Successfully - Registered] , [QR Photo ] , [QR Image (Downloading -  sharing)]
-<img width="1095" height="847" alt="تسجيل لاعب جديد" src="https://github.com/user-attachments/assets/64dbe7ac-d055-46dd-a955-d27c2b61c0dc" />
-<img width="467" height="765" alt="QrToken" src="https://github.com/user-attachments/assets/d5d9e135-5ee1-471c-b933-0cdba85646cc" />
-<img width="520" height="276" alt="تحميل صورةQr" src="https://github.com/user-attachments/assets/d83ee24e-ed79-43ce-ae94-e44a932000bc" />
+### Check-in History & Member Management
+<img width="1897" height="877" alt="History" src="https://github.com/user-attachments/assets/012c6774-8c63-478a-916c-7ac237e35686" />
+<img width="1893" height="873" alt="Members" src="https://github.com/user-attachments/assets/3a279ee7-7a21-4b7f-a679-01a69a53b91e" />
 
-##[Member - (Check-In) - Daily ]
-<img width="1897" height="877" alt="سجل الحضور " src="https://github.com/user-attachments/assets/012c6774-8c63-478a-916c-7ac237e35686" />
+## 🧠 Design Decisions
+*   **The server decides the status color.** The frontend simply displays it. This prevents tampering.
+*   **Amount owed is calculated dynamically** from payment history; it is never stored as a static number.
+*   **UTC vs. DateOnly:** Exact moments (check-ins, payments) are stored in UTC. Subscriptions use `DateOnly` based on the gym's local timezone.
+*   **Foreign Keys use `Restrict`:** A member or plan cannot be deleted if they have payment history, protecting the gym's financial data.
 
-##[Page - Members Table -Info]
-<img width="1893" height="873" alt="صفحة البحث عن العضو" src="https://github.com/user-attachments/assets/3a279ee7-7a21-4b7f-a679-01a69a53b91e" />
-
-
-
-
-
-## Design decisions
-- The server decides the colour; the page only displays it
-- `PriceCharged` is copied onto each subscription, so later price changes never rewrite history
-- Amount owed is calculated from payments, never stored
-- Foreign keys use `Restrict`: payment history can't be deleted by accident
-- Dates are `DateOnly`, exact moments are UTC; "today" is the gym's local date
-
-## Run locally
-Requirements: .NET 8 SDK, PostgreSQL.
+## 💻 Running Locally (Docker)
+The easiest way to run this project is via Docker.
 ```bash
-dotnet user-secrets init --project GymManagementSystem.Api
-dotnet user-secrets set "ConnectionStrings:Default" "Host=localhost;Database=gym_db;Username=postgres;Password=<your-password>" --project GymManagementSystem.Api
-dotnet user-secrets set "Jwt:Key" "<32+ random characters>" --project GymManagementSystem.Api
-dotnet user-secrets set "Jwt:Issuer" "GymApi" --project GymManagementSystem.Api
-dotnet user-secrets set "Jwt:Audience" "GymStaff" --project GymManagementSystem.Api
-dotnet user-secrets set "Seed:OwnerPassword" "<choose a password>" --project GymManagementSystem.Api
-dotnet ef database update --project GymManagementSystem.Infrastructure --startup-project GymManagementSystem.Api
-dotnet run --project GymManagementSystem.Api
-```
-Sample plans and coaches: `docs/seed.sql`. Log in as `owner`.
+# 1. Clone the repository
+git clone https://github.com/jack0355/Gym_Management_System.git
+cd Gym_Management_System
 
-## Known limitations / roadmap
-- No automated tests yet (planned: tests for the colour rule)
-- Login rate limiting, Docker and deployment are planned
-- Single gym per deployment
+# 2. Create your .env file
+echo "JWT_KEY=YourSuperSecretKey1234567890!" > .env
+echo "OWNER_PASSWORD=YourOwnerPassword123!" >> .env
+
+# 3. Build and run
+docker compose up --build -d
+
+# 4. Seed the database with initial plans and coaches
+docker cp .\docs\seed.sql gym_management_system-db-1:/seed.sql
+docker exec -it gym_management_system-db-1 psql -U gym -d gym_db -f /seed.sql

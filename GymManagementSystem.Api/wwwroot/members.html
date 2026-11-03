@@ -436,6 +436,7 @@
             try {
                 plans = await call('/api/Plans');
                 coaches = await call('/api/Coaches');
+                $('rPlan').innerHTML = '<option value="">اختر الاشتراك</option>';
                 plans.forEach(function (p) {
                     const label = p.name + ' — ' + (p.durationInDays === 1 ? 'يومي' : p.durationInDays + ' يوم') + ' — ' + p.price + ' ل.س';
                     $('rPlan').appendChild(new Option(label, p.id));
@@ -628,8 +629,8 @@
         $('renewConfirm').addEventListener('click', renew);
         $('rPlan').addEventListener('change', updateRenewForm);
         $('rProgram').addEventListener('change', updateRenewForm);
-        $('memberGender').addEventListener('change', fillcoahces);
-        loadLists();
+
+        loadLists(); // This will now run perfectly because the crash is gone.
     </script>
 </body>
 </html>

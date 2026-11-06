@@ -537,24 +537,20 @@
             const q = $('q').value.trim();
             const box = $('results');
             box.innerHTML = '';
-            if (q.length < 2) { return; }
+
+            if (q.length < 2) {
+                lastSearchResults = [];
+                return;
+            }
+
             try {
                 const list = await call('/api/Members/search?q=' + encodeURIComponent(q));
-                if (!list.length) { box.appendChild(el('p', 'note', 'لا توجد نتائج')); return; }
-                list.forEach(function (m) {
-                    const b = el('button', 'ghost result');
-                    b.appendChild(el('span', '', m.fullName + (m.isActive ? '' : ' (غير مفعّل)')));
-                    b.appendChild(el('small', '', m.phone));
-                    b.addEventListener('click', function () { openMember(m.id); });
-                    box.appendChild(b);
-                });
+                lastSearchResults = list; 
+                renderSearchResults();    
             } catch (err) {
                 if (err.message !== 'LOGIN') { box.appendChild(el('p', 'note', 'تعذر البحث')); }
             }
         }
-
-
-
         function renderSearchResults() {
             const box = $('results');
             box.innerHTML = '';

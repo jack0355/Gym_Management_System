@@ -545,8 +545,8 @@
 
             try {
                 const list = await call('/api/Members/search?q=' + encodeURIComponent(q));
-                lastSearchResults = list; 
-                renderSearchResults();    
+                lastSearchResults = list;
+                renderSearchResults();
             } catch (err) {
                 if (err.message !== 'LOGIN') { box.appendChild(el('p', 'note', 'تعذر البحث')); }
             }
@@ -555,7 +555,7 @@
             const box = $('results');
             box.innerHTML = '';
 
-        
+
             const filtered = lastSearchResults.filter(function (m) {
                 if (currentFilter === 'ALL') return true;
                 return m.status === currentFilter;
@@ -569,7 +569,7 @@
             filtered.forEach(function (m) {
                 const b = el('button', 'ghost result');
 
-           
+
                 const nameSpan = el('span', '', m.fullName + (m.isActive ? '' : ' (غير مفعّل)'));
                 if (m.status) {
                     const dot = document.createElement('span');

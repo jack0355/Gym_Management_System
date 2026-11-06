@@ -287,6 +287,82 @@
         .hidden {
             display: none !important;
         }
+
+        .filter-pills {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+
+        .pill {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+            box-shadow: none;
+            width: auto;
+            margin: 0;
+        }
+
+            .pill:hover {
+                background: var(--surface-hover);
+                color: var(--text);
+            }
+
+            .pill.active {
+                background: var(--text);
+                color: var(--bg);
+                border-color: var(--text);
+            }
+
+            .pill.green.active {
+                background: var(--green);
+                color: #fff;
+                border-color: var(--green);
+            }
+
+            .pill.yellow.active {
+                background: var(--yellow);
+                color: #fff;
+                border-color: var(--yellow);
+            }
+
+            .pill.red.active {
+                background: var(--red);
+                color: #fff;
+                border-color: var(--red);
+            }
+
+        .status-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-inline-start: 8px;
+        }
+
+        .dot-Green {
+            background: var(--green);
+            box-shadow: 0 0 8px var(--green);
+        }
+
+        .dot-Yellow {
+            background: var(--yellow);
+            box-shadow: 0 0 8px var(--yellow);
+        }
+
+        .dot-Red {
+            background: var(--red);
+            box-shadow: 0 0 8px var(--red);
+        }
     </style>
 </head>
 <body>
@@ -313,6 +389,16 @@
         <section class="card">
             <label for="q">ابحث بالاسم أو رقم الهاتف</label>
             <input id="q" placeholder="حرفان على الأقل" autocomplete="off">
+
+
+
+            <div class="filter-pills" id="filterPills">
+                <button class="pill active" data-filter="ALL">الكل</button>
+                <button class="pill green" data-filter="Green">✓ ساري (أخضر)</button>
+                <button class="pill yellow" data-filter="Yellow">! ينتهي قريباً (أصفر)</button>
+                <button class="pill red" data-filter="Red">✕ منتهي / غير مدفوع (أحمر)</button>
+            </div>
+
             <div id="results"></div>
         </section>
 
@@ -361,7 +447,8 @@
         const getToken = () => sessionStorage.getItem('jwt');
         const ICONS = { Green: '✓', Yellow: '!', Red: '✕' };
         let plans = [], coaches = [], current = null, renewSub = null, searchTimer = null, flashTimer = null;
-
+        let currentFilter = 'All';
+        let lastSearchResults = [];
         if (!getToken()) { window.location.href = 'index.html'; }
 
         function el(tag, cls, text) {
@@ -465,6 +552,45 @@
                 if (err.message !== 'LOGIN') { box.appendChild(el('p', 'note', 'تعذر البحث')); }
             }
         }
+
+
+
+        function renderSearchResults() {
+            const box = $('results');
+            box.innerHTML = '';
+
+            // Filter the list in JavaScript
+            const filtered = lastSearchResults.filter(function (m) {
+                if (currentFilter === 'ALL') return true;
+                return m.status === currentFilter;
+            });
+
+            if (!filtered.length) {
+                box.appendChild(el('p', 'note', 'لا توجد نتائج مطابقة لهذا الفلتر'));
+                return;
+            }
+
+            filtered.forEach(function (m) {
+                const b = el('button', 'ghost result');
+
+                // Add the colored dot
+                const nameSpan = el('span', '', m.fullName + (m.isActive ? '' : ' (غير مفعّل)'));
+                if (m.status) {
+                    const dot = document.createElement('span');
+                    dot.className = 'status-dot dot-' + m.status;
+                    nameSpan.appendChild(dot);
+                }
+
+                b.appendChild(nameSpan);
+                b.appendChild(el('small', '', m.phone));
+                b.addEventListener('click', function () { openMember(m.id); });
+                box.appendChild(b);
+            });
+        }
+
+
+
+
 
         function addRow(label, value) {
             const row = el('div', 'row');
@@ -629,8 +755,21 @@
         $('renewConfirm').addEventListener('click', renew);
         $('rPlan').addEventListener('change', updateRenewForm);
         $('rProgram').addEventListener('change', updateRenewForm);
+        document.querySelectorAll('.pill').forEach(function (pill) {
+            pill.addEventListener('click', function () {
 
-        loadLists(); 
+                document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+                this.classList.add('active');
+
+
+                currentFilter = this.getAttribute('data-filter');
+                if (lastSearchResults.length > 0) {
+                    renderSearchResults();
+                }
+            });
+        });
+
+        loadLists();
     </script>
 </body>
 </html>

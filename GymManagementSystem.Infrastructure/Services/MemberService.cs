@@ -56,15 +56,39 @@ public class MemberService
     public async Task<List<MemberListItem>> SeacrhAsync(string? q)
     {
         var term = (q ?? "").Trim().ToLower();
-
         if (term.Length < 2) return new List<MemberListItem>();
 
-        return await _db.Members.AsNoTracking()
+        var today = GymClock.Today();
+
+
+        var members = await _db.Members.AsNoTracking()
             .Where(m => m.FullName.ToLower().Contains(term) || m.Phone.Contains(term))
             .OrderBy(m => m.FullName)
-            .Take(20)
-            .Select(m => new MemberListItem(m.Id, m.FullName, m.Phone, m.IsActive))
+            .Take(10)
             .ToListAsync();
+
+        var memberIds = members.Select(m => m.Id).ToList();
+
+        var activeSubs = await _db.Subscriptions.AsNoTracking()
+            .Include(s => s.Plan)
+            .Include(s => s.Payments)
+            .Where(s => memberIds.Contains(s.MemberId) && s.StartDate <= today && s.EndDate >= today)
+            .OrderByDescending(s => s.EndDate)
+            .ToListAsync();
+
+        var result = new List<MemberListItem>();
+
+        foreach (var m in members)
+        {
+            var sub = activeSubs.FirstOrDefault(s => s.MemberId == m.Id);
+            var paid = sub?.Payments.Sum(p => p.Amount) ?? 0m;
+
+            var status = CheckInRules.Decide(m.IsActive, sub, paid, sub?.Plan.DurationInDays ?? 0, today);
+
+            result.Add(new MemberListItem(m.Id, m.FullName, m.Phone, m.IsActive, status.ToString()));
+        }
+
+        return result;
     }
 
     public async Task<MemberSummary?> GetSummaryAsync(int id)

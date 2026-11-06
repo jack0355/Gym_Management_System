@@ -1,1 +1,1 @@
-﻿public record MemberListItem(int Id, string FullName, string Phone, bool IsActive);
+﻿public record MemberListItem(int Id, string FullName, string Phone, bool IsActive ,string status);

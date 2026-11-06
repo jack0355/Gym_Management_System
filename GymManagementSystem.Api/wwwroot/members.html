@@ -447,7 +447,7 @@
         const getToken = () => sessionStorage.getItem('jwt');
         const ICONS = { Green: '✓', Yellow: '!', Red: '✕' };
         let plans = [], coaches = [], current = null, renewSub = null, searchTimer = null, flashTimer = null;
-        let currentFilter = 'All';
+        let currentFilter = 'ALL';
         let lastSearchResults = [];
         if (!getToken()) { window.location.href = 'index.html'; }
 
@@ -559,7 +559,7 @@
             const box = $('results');
             box.innerHTML = '';
 
-            // Filter the list in JavaScript
+        
             const filtered = lastSearchResults.filter(function (m) {
                 if (currentFilter === 'ALL') return true;
                 return m.status === currentFilter;
@@ -573,7 +573,7 @@
             filtered.forEach(function (m) {
                 const b = el('button', 'ghost result');
 
-                // Add the colored dot
+           
                 const nameSpan = el('span', '', m.fullName + (m.isActive ? '' : ' (غير مفعّل)'));
                 if (m.status) {
                     const dot = document.createElement('span');

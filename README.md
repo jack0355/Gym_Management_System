@@ -34,10 +34,17 @@ Strictly layered following Clean Architecture principles: `Api → Infrastructur
 ### Dashboard & Scanner
 <img width="1910" height="885" alt="Main" src="https://github.com/user-attachments/assets/110d14f1-93a1-4822-80bd-308bedd01eb8" />
 <img width="1908" height="885" alt="Scanner" src="https://github.com/user-attachments/assets/92cb1dbc-669b-4582-9271-3a0bb4f469b3" />
+<img width="1153" height="762" alt="Scan successed " src="https://github.com/user-attachments/assets/9af57405-d6cd-465d-8fdd-053a8936ef4c" />
+
 
 ### Member Registration & QR
 <img width="1095" height="847" alt="Register" src="https://github.com/user-attachments/assets/cd63f699-716b-4b76-a8a5-8c09d2cbc826" />
 <img width="467" height="765" alt="QR" src="https://github.com/user-attachments/assets/d5d9e135-5ee1-471c-b933-0cdba85646cc" />
+
+
+## coaches Stats . 
+<img width="1861" height="881" alt="Coach Stats " src="https://github.com/user-attachments/assets/13229016-b1eb-47d5-af8e-7fe59a03a524" />
+
 
 ### Check-in History & Member Management
 <img width="1897" height="877" alt="History" src="https://github.com/user-attachments/assets/012c6774-8c63-478a-916c-7ac237e35686" />

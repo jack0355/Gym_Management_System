@@ -394,9 +394,9 @@
 
             <div class="filter-pills" id="filterPills">
                 <button class="pill active" data-filter="ALL">الكل</button>
-                <button class="pill green" data-filter="Green">✓ ساري (أخضر)</button>
-                <button class="pill yellow" data-filter="Yellow">! ينتهي قريباً (أصفر)</button>
-                <button class="pill red" data-filter="Red">✕ منتهي / غير مدفوع (أحمر)</button>
+                <button class="pill green" data-filter="Green">✓ ساري</button>
+                <button class="pill yellow" data-filter="Yellow">! يجب الدفع أو ينتهي قريباً</button>
+                <button class="pill red" data-filter="Red">✕ لا يوجد اشتراك ساري</button>
             </div>
 
             <div id="results"></div>
@@ -537,51 +537,40 @@
             const q = $('q').value.trim();
             const box = $('results');
             box.innerHTML = '';
-
-            if (q.length < 2) {
-                lastSearchResults = [];
-                return;
-            }
-
+            if (q.length < 2 && currentFilter === 'ALL') { lastSearchResults = []; return; }
             try {
-                const list = await call('/api/Members/search?q=' + encodeURIComponent(q));
-                lastSearchResults = list;
+                const url = '/api/Members/search?q=' + encodeURIComponent(q) +
+                    (currentFilter !== 'ALL' ? '&status=' + currentFilter : '');
+                lastSearchResults = await call(url);
                 renderSearchResults();
             } catch (err) {
                 if (err.message !== 'LOGIN') { box.appendChild(el('p', 'note', 'تعذر البحث')); }
             }
         }
+
         function renderSearchResults() {
             const box = $('results');
             box.innerHTML = '';
-
-
-            const filtered = lastSearchResults.filter(function (m) {
-                if (currentFilter === 'ALL') return true;
-                return m.status === currentFilter;
-            });
-
-            if (!filtered.length) {
-                box.appendChild(el('p', 'note', 'لا توجد نتائج مطابقة لهذا الفلتر'));
+            if (!lastSearchResults.length) {
+                box.appendChild(el('p', 'note', 'لا توجد نتائج'));
                 return;
             }
-
-            filtered.forEach(function (m) {
+            lastSearchResults.forEach(function (m) {
                 const b = el('button', 'ghost result');
-
-
                 const nameSpan = el('span', '', m.fullName + (m.isActive ? '' : ' (غير مفعّل)'));
                 if (m.status) {
                     const dot = document.createElement('span');
                     dot.className = 'status-dot dot-' + m.status;
                     nameSpan.appendChild(dot);
                 }
-
                 b.appendChild(nameSpan);
                 b.appendChild(el('small', '', m.phone));
                 b.addEventListener('click', function () { openMember(m.id); });
                 box.appendChild(b);
             });
+            if (lastSearchResults.length === 50) {
+                box.appendChild(el('p', 'note', 'يظهر أول 50 فقط، اكتب جزءاً من الاسم لتضييق النتائج'));
+            }
         }
 
 
@@ -753,15 +742,10 @@
         $('rProgram').addEventListener('change', updateRenewForm);
         document.querySelectorAll('.pill').forEach(function (pill) {
             pill.addEventListener('click', function () {
-
-                document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
-                this.classList.add('active');
-
-
-                currentFilter = this.getAttribute('data-filter');
-                if (lastSearchResults.length > 0) {
-                    renderSearchResults();
-                }
+                document.querySelectorAll('.pill').forEach(function (p) { p.classList.remove('active'); });
+                pill.classList.add('active');
+                currentFilter = pill.getAttribute('data-filter');
+                doSearch();
             });
         });
 

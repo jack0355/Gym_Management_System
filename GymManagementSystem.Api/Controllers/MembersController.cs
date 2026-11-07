@@ -47,11 +47,9 @@ namespace GymManagementSystem.Api.Controllers
         }
 
         [HttpGet("search")]
-        [Authorize(Roles = "Owner , Coach")]
-        public async Task<ActionResult<List<MemberListItem>>> Search([FromQuery] string? q)
-            => Ok(await _members.SeacrhAsync(q));
-
-
+        [Authorize(Roles = "Owner,Coach")]
+        public async Task<ActionResult<List<MemberListItem>>> Search([FromQuery] string? q, [FromQuery] string? status)
+     => Ok(await _members.SearchAsync(q, status));
 
         [HttpGet("{id:int}/summary")]
         [Authorize(Roles = "Owner , Coach")]

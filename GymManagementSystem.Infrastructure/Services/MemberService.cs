@@ -53,20 +53,20 @@ public class MemberService
             .FirstOrDefaultAsync();
     }
 
-    public async Task<List<MemberListItem>> SeacrhAsync(string? q)
+    public async Task<List<MemberListItem>> SearchAsync(string? q, string? status)
     {
         var term = (q ?? "").Trim().ToLower();
-        if (term.Length < 2) return new List<MemberListItem>();
+        var wanted = (status ?? "").Trim();
+        bool byStatus = wanted == "Green" || wanted == "Yellow" || wanted == "Red";
+        if (term.Length < 2 && !byStatus) return new List<MemberListItem>();
 
         var today = GymClock.Today();
 
+        var query = _db.Members.AsNoTracking().AsQueryable();
+        if (term.Length >= 2)
+            query = query.Where(m => m.FullName.ToLower().Contains(term) || m.Phone.Contains(term));
 
-        var members = await _db.Members.AsNoTracking()
-            .Where(m => m.FullName.ToLower().Contains(term) || m.Phone.Contains(term))
-            .OrderBy(m => m.FullName)
-            .Take(10)
-            .ToListAsync();
-
+        var members = await query.OrderBy(m => m.FullName).Take(byStatus ? 1000 : 10).ToListAsync();
         var memberIds = members.Select(m => m.Id).ToList();
 
         var activeSubs = await _db.Subscriptions.AsNoTracking()
@@ -77,17 +77,15 @@ public class MemberService
             .ToListAsync();
 
         var result = new List<MemberListItem>();
-
         foreach (var m in members)
         {
             var sub = activeSubs.FirstOrDefault(s => s.MemberId == m.Id);
             var paid = sub?.Payments.Sum(p => p.Amount) ?? 0m;
-
-            var status = CheckInRules.Decide(m.IsActive, sub, paid, sub?.Plan.DurationInDays ?? 0, today);
-
-            result.Add(new MemberListItem(m.Id, m.FullName, m.Phone, m.IsActive, status.ToString()));
+            var colour = CheckInRules.Decide(m.IsActive, sub, paid, sub?.Plan.DurationInDays ?? 0, today).ToString();
+            if (byStatus && colour != wanted) continue;
+            result.Add(new MemberListItem(m.Id, m.FullName, m.Phone, m.IsActive, colour));
+            if (result.Count == 50) break;
         }
-
         return result;
     }
 

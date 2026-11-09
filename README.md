@@ -56,6 +56,11 @@ Strictly layered following Clean Architecture principles: `Api → Infrastructur
 *   **UTC vs. DateOnly:** Exact moments (check-ins, payments) are stored in UTC. Subscriptions use `DateOnly` based on the gym's local timezone.
 *   **Foreign Keys use `Restrict`:** A member or plan cannot be deleted if they have payment history, protecting the gym's financial data.
 
+## 🧪 Testing
+- **Unit Tests:** The core business logic, including the Check-In color rules (Green/Yellow/Red) and Member search filtering, is fully covered by automated tests.
+- **Frameworks:** xUnit and Entity Framework Core In-Memory Database.
+- **Run Locally:** Execute `dotnet test` in the terminal to run the test suite.
+
 ## 💻 Running Locally (Docker)
 The easiest way to run this project is via Docker.
 ```bash

@@ -56,6 +56,12 @@
             color: #60a5fa;
         }
 
+        .nav-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
         .nav-btn {
             background: linear-gradient(135deg, #3b82f6, #1d4ed8);
             border: none;
@@ -72,6 +78,22 @@
             .nav-btn:hover {
                 transform: translateY(-1px);
                 box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            }
+
+        button.ghost {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font: inherit;
+            font-weight: 700;
+        }
+
+            button.ghost:hover {
+                background: rgba(255, 255, 255, 0.05);
+                color: var(--text-main);
             }
 
         main {
@@ -221,6 +243,11 @@
                 padding: 15px;
             }
 
+            .nav-actions {
+                width: 100%;
+                justify-content: center;
+            }
+
             main {
                 padding: 15px;
             }
@@ -236,7 +263,10 @@
         <div class="logo-area">
             <span>💪</span> بوابة المدرب
         </div>
-        <a href="checkin-history.html" class="nav-btn">📊 سجل الحضور</a>
+        <div class="nav-actions">
+            <a href="checkin-history.html" class="nav-btn">📊 سجل الحضور</a>
+            <button id="logout" class="ghost hidden">تسجيل خروج</button>
+        </div>
     </header>
 
     <main>
@@ -277,7 +307,12 @@
             const loggedIn = !!getToken();
             $('login').classList.toggle('hidden', loggedIn);
             $('scannerWrapper').classList.toggle('hidden', !loggedIn);
-            if (loggedIn) { idle(); $('token').focus(); }
+            $('logout').classList.toggle('hidden', !loggedIn);
+
+            if (loggedIn) {
+                idle();
+                $('token').focus();
+            }
         }
 
         function idle() {
@@ -302,6 +337,12 @@
             } catch (err) { $('loginError').textContent = 'تعذر الاتصال بالخادم'; }
         }
 
+        async function logout() {
+            await stopCamera();
+            sessionStorage.removeItem('jwt');
+            render();
+        }
+
         async function scan(qrToken) {
             if (busy || !qrToken) return;
             busy = true;
@@ -311,7 +352,7 @@
                     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
                     body: JSON.stringify({ qrToken })
                 });
-                if (res.status === 401) { sessionStorage.removeItem('jwt'); window.location.reload(); return; }
+                if (res.status === 401) { await logout(); return; }
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 show(await res.json());
             } catch (err) {
@@ -370,6 +411,7 @@
         $('pass').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
         $('token').addEventListener('keydown', e => { if (e.key === 'Enter') scan($('token').value.trim()); });
         $('camBtn').addEventListener('click', () => qr && qr.isScanning ? stopCamera() : startCamera());
+        $('logout').addEventListener('click', logout);
 
         render();
     </script>

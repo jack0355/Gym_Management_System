@@ -1,4 +1,6 @@
-﻿using GymManagementSystem.Infrastructure;
+﻿using GymManagementSystem.Core.Entities;
+using GymManagementSystem.Core.Enums;
+using GymManagementSystem.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -61,6 +63,16 @@ public class AuthService
 
         return new JwtSecurityTokenHandler().WriteToken(token);
 
+    }
+
+
+    public async Task<bool> CreateCoachAsync(string userName, string password)
+    {
+        userName = userName.Trim();
+        if (await _db.Users.AnyAsync(u => u.UserName == userName)) return false;
+        _db.Users.Add(new User { UserName = userName, PasswordHash = _hasher.Hash(password), Role = StaffRole.Coach });
+        await _db.SaveChangesAsync();
+        return true;
     }
 
 }

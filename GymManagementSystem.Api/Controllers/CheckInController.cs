@@ -7,7 +7,7 @@ namespace GymManagementSystem.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles ="Owner , Coach")]
+    [Authorize(Roles = "Owner,Coach")]
     public class CheckInController : ControllerBase
     {
         private readonly CheckInService _services;
@@ -35,7 +35,10 @@ namespace GymManagementSystem.Api.Controllers
         public async Task<IActionResult> GetLogs([FromQuery] DateOnly date)
         {
             if (date == default) { date = GymClock.Today(); }
-            return Ok(await _services.GetLogsByDateAsync(date));
+            var logs = await _services.GetLogsByDateAsync(date);
+            if (!User.IsInRole("Owner"))
+                logs = logs.Select(l => l with { AmountOwedNow = null }).ToList();
+            return Ok(logs);
         }
 
     }

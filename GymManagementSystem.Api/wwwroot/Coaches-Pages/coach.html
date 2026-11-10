@@ -18,12 +18,12 @@
             --danger: #ef4444;
             --radius-lg: 20px;
             --radius-md: 12px;
-            font-family: 'Tajawal', sans-serif;
+            font-family: 'Tajawal', Tahoma, Arial, sans-serif;
         }
 
         * {
             box-sizing: border-box;
-            transition: all 0.25s ease;
+            transition: all .25s ease;
         }
 
         body {
@@ -41,7 +41,7 @@
             align-items: center;
             padding: 20px 36px;
             border-bottom: 1px solid var(--border);
-            background: rgba(15, 23, 42, 0.85);
+            background: rgba(15,23,42,.85);
             position: sticky;
             top: 0;
             z-index: 100;
@@ -56,46 +56,6 @@
             color: #60a5fa;
         }
 
-        .nav-actions {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .nav-btn {
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-            border: none;
-            padding: 10px 20px;
-            font-size: 0.95rem;
-            font-weight: 700;
-            color: #fff;
-            border-radius: 10px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-            .nav-btn:hover {
-                transform: translateY(-1px);
-                box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-            }
-
-        button.ghost {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-muted);
-            padding: 8px 16px;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            font: inherit;
-            font-weight: 700;
-        }
-
-            button.ghost:hover {
-                background: rgba(255, 255, 255, 0.05);
-                color: var(--text-main);
-            }
-
         main {
             flex: 1;
             max-width: 600px;
@@ -109,15 +69,14 @@
             border: 1px solid var(--border);
             border-radius: var(--radius-lg);
             padding: 32px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,.4);
             margin-bottom: 24px;
         }
 
         .card-title {
             font-size: 1.2rem;
             font-weight: 700;
-            margin-top: 0;
-            margin-bottom: 20px;
+            margin: 0 0 20px;
         }
 
         input, button {
@@ -134,7 +93,7 @@
             input:focus {
                 outline: none;
                 border-color: var(--primary);
-                box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+                box-shadow: 0 0 0 4px rgba(59,130,246,.2);
             }
 
         button {
@@ -142,12 +101,43 @@
             border: none;
             font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
+            box-shadow: 0 4px 14px rgba(59,130,246,.35);
         }
 
             button:hover {
                 background: #2563eb;
                 transform: translateY(-1px);
+            }
+
+            button.ghost {
+                background: transparent;
+                border: 1px solid var(--border);
+                color: var(--text-muted);
+                width: auto;
+                margin: 0;
+                padding: 8px 16px;
+                box-shadow: none;
+            }
+
+        .tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            margin: 0;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            box-shadow: none;
+        }
+
+            .tab.active {
+                background: var(--primary);
+                color: #fff;
+                border-color: var(--primary);
             }
 
         #reader {
@@ -187,17 +177,17 @@
         }
 
             .panel.Green {
-                background: linear-gradient(135deg, #064e3b, #047857);
+                background: linear-gradient(135deg,#064e3b,#047857);
                 border-color: var(--success);
             }
 
             .panel.Yellow {
-                background: linear-gradient(135deg, #78350f, #b45309);
+                background: linear-gradient(135deg,#78350f,#b45309);
                 border-color: var(--warning);
             }
 
             .panel.Red {
-                background: linear-gradient(135deg, #7f1d1d, #b91c1c);
+                background: linear-gradient(135deg,#7f1d1d,#b91c1c);
                 border-color: var(--danger);
             }
 
@@ -219,6 +209,104 @@
             margin-block-start: 16px;
         }
 
+        .chips {
+            display: grid;
+            grid-template-columns: repeat(4,1fr);
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .chip {
+            margin: 0;
+            padding: 10px 4px;
+            background: #0b1329;
+            border: 1px solid var(--border);
+            box-shadow: none;
+            font-weight: 500;
+        }
+
+            .chip.active {
+                border-color: var(--primary);
+                box-shadow: 0 0 0 3px rgba(59,130,246,.25);
+            }
+
+            .chip strong {
+                display: block;
+                font-size: 1.3rem;
+            }
+
+            .chip small {
+                color: var(--text-muted);
+            }
+
+            .chip.g strong {
+                color: var(--success);
+            }
+
+            .chip.y strong {
+                color: var(--warning);
+            }
+
+            .chip.r strong {
+                color: var(--danger);
+            }
+
+        .item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: #0b1329;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 12px 14px;
+            margin-bottom: 8px;
+        }
+
+        .dot {
+            flex: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.2rem;
+            color: #fff;
+        }
+
+            .dot.Green {
+                background: var(--success);
+            }
+
+            .dot.Yellow {
+                background: var(--warning);
+                color: #1b1f24;
+            }
+
+            .dot.Red {
+                background: var(--danger);
+            }
+
+        .main {
+            flex: 1;
+            min-width: 0;
+        }
+
+            .main .nm {
+                font-weight: 700;
+            }
+
+            .main .sub {
+                color: var(--text-muted);
+                font-size: .88rem;
+            }
+
+        .time {
+            flex: none;
+            font-weight: 700;
+        }
+
         .hidden {
             display: none !important;
         }
@@ -236,16 +324,9 @@
             margin-top: 10px;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width:768px) {
             header {
-                flex-direction: column;
-                gap: 15px;
                 padding: 15px;
-            }
-
-            .nav-actions {
-                width: 100%;
-                justify-content: center;
             }
 
             main {
@@ -260,13 +341,8 @@
 </head>
 <body>
     <header>
-        <div class="logo-area">
-            <span>💪</span> بوابة المدرب
-        </div>
-        <div class="nav-actions">
-            <a href="checkin-history.html" class="nav-btn">📊 سجل الحضور</a>
-            <button id="logout" class="ghost hidden">تسجيل خروج</button>
-        </div>
+        <div class="logo-area"><span>💪</span> بوابة المدرب</div>
+        <button id="logout" class="ghost hidden">تسجيل خروج</button>
     </header>
 
     <main>
@@ -278,20 +354,39 @@
             <p id="loginError" class="error"></p>
         </section>
 
-        <div id="scannerWrapper" class="hidden">
-            <section class="card">
-                <h3 class="card-title">📷 مسح رمز الاستجابة السريعة</h3>
-                <div id="reader"></div>
-                <button id="camBtn">تشغيل كاميرا المسح</button>
-                <p id="notice" class="muted"></p>
-                <input id="token" placeholder="أو أدخل أو امسح الرمز يدوياً هنا..." autocomplete="off">
-            </section>
-
-            <div id="result" class="panel">
-                <div id="icon">🛡️</div>
-                <div id="message">جاهز للمسح</div>
-                <div id="name"></div>
+        <div id="app" class="hidden">
+            <div class="tabs">
+                <button id="tabScan" class="tab active">📷 المسح</button>
+                <button id="tabHistory" class="tab">📊 سجل الحضور</button>
             </div>
+
+            <div id="viewScan">
+                <section class="card">
+                    <h3 class="card-title">📷 مسح رمز الاستجابة السريعة</h3>
+                    <div id="reader"></div>
+                    <button id="camBtn">تشغيل كاميرا المسح</button>
+                    <p id="notice" class="muted"></p>
+                    <input id="token" placeholder="أو أدخل أو امسح الرمز يدوياً هنا..." autocomplete="off">
+                </section>
+                <div id="result" class="panel">
+                    <div id="icon">🛡️</div>
+                    <div id="message">جاهز للمسح</div>
+                    <div id="name"></div>
+                </div>
+            </div>
+
+            <section id="viewHistory" class="card hidden">
+                <h3 class="card-title">📊 سجل الحضور</h3>
+                <input type="date" id="logDate">
+                <div class="chips">
+                    <button class="chip active" data-colour="All"><strong id="cAll">0</strong><small>الكل</small></button>
+                    <button class="chip g" data-colour="Green"><strong id="cGreen">0</strong><small>✓ أخضر</small></button>
+                    <button class="chip y" data-colour="Yellow"><strong id="cYellow">0</strong><small>! أصفر</small></button>
+                    <button class="chip r" data-colour="Red"><strong id="cRed">0</strong><small>✕ أحمر</small></button>
+                </div>
+                <div id="list"></div>
+                <p id="empty" class="muted"></p>
+            </section>
         </div>
     </main>
 
@@ -302,17 +397,40 @@
         const $ = id => document.getElementById(id);
         const getToken = () => sessionStorage.getItem('jwt');
         let busy = false, resetTimer, qr = null, lastText = '', lastAt = 0;
+        let items = [], colour = 'All', tab = 'scan';
+
+        function el(tag, cls, text) {
+            const e = document.createElement(tag);
+            if (cls) { e.className = cls; }
+            if (text !== undefined) { e.textContent = text; }
+            return e;
+        }
+
+        function gymToday() {
+            return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Damascus' });
+        }
+
+        function timeText(iso) {
+            const d = new Date(/Z$|[+-]\d\d:\d\d$/.test(iso) ? iso : iso + 'Z');
+            return d.toLocaleTimeString('ar-SY-u-nu-latn', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Asia/Damascus' });
+        }
 
         function render() {
             const loggedIn = !!getToken();
             $('login').classList.toggle('hidden', loggedIn);
-            $('scannerWrapper').classList.toggle('hidden', !loggedIn);
+            $('app').classList.toggle('hidden', !loggedIn);
             $('logout').classList.toggle('hidden', !loggedIn);
+            if (loggedIn) { idle(); showTab(tab); }
+        }
 
-            if (loggedIn) {
-                idle();
-                $('token').focus();
-            }
+        function showTab(name) {
+            tab = name;
+            $('viewScan').classList.toggle('hidden', name !== 'scan');
+            $('viewHistory').classList.toggle('hidden', name !== 'history');
+            $('tabScan').classList.toggle('active', name === 'scan');
+            $('tabHistory').classList.toggle('active', name === 'history');
+            if (name === 'scan') { $('token').focus(); }
+            else { stopCamera(); loadLogs(false); }
         }
 
         function idle() {
@@ -330,6 +448,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userName: $('user').value, password: $('pass').value })
                 });
+                if (res.status === 429) { $('loginError').textContent = 'محاولات كثيرة، انتظر دقيقة ثم أعد المحاولة'; return; }
                 if (!res.ok) { $('loginError').textContent = 'اسم المستخدم أو كلمة المرور غير صحيحة'; return; }
                 sessionStorage.setItem('jwt', (await res.json()).token);
                 $('pass').value = '';
@@ -340,6 +459,7 @@
         async function logout() {
             await stopCamera();
             sessionStorage.removeItem('jwt');
+            tab = 'scan';
             render();
         }
 
@@ -350,12 +470,13 @@
                 const res = await fetch('/api/CheckIn/scan', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
-                    body: JSON.stringify({ qrToken })
+                    body: JSON.stringify({ qrToken: qrToken })
                 });
                 if (res.status === 401) { await logout(); return; }
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 show(await res.json());
             } catch (err) {
+                console.error('scan failed:', err);
                 $('result').className = 'panel';
                 $('icon').textContent = '⚠';
                 $('message').textContent = 'تعذر الاتصال بالخادم';
@@ -363,7 +484,7 @@
             } finally {
                 busy = false;
                 $('token').value = '';
-                if (!qr) $('token').focus();
+                if (!qr) { $('token').focus(); }
             }
         }
 
@@ -373,8 +494,7 @@
             $('icon').textContent = ICONS[status] || '✕';
             $('message').textContent = MESSAGES[d.messageCode] || 'نتيجة الفحص';
             $('name').textContent = d.memberName || '';
-
-            if (navigator.vibrate) navigator.vibrate(status === 'Green' ? 80 : [120, 60, 120]);
+            if (navigator.vibrate) { navigator.vibrate(status === 'Green' ? 80 : [120, 60, 120]); }
             clearTimeout(resetTimer);
             resetTimer = setTimeout(idle, 10000);
         }
@@ -392,9 +512,10 @@
             try {
                 if (!qr) qr = new Html5Qrcode('reader');
                 if (qr.isScanning) return;
-                await qr.start({ facingMode: 'environment' }, { fps: 15, qrbox: { width: 250, height: 250 } }, onCode, () => { });
+                await qr.start({ facingMode: 'environment' }, { fps: 15, qrbox: { width: 250, height: 250 } }, onCode, function () { });
                 $('camBtn').textContent = 'إيقاف الكاميرا';
             } catch (err) {
+                console.error('camera failed:', err);
                 $('notice').textContent = 'تعذر تشغيل الكاميرا';
                 qr = null;
             }
@@ -407,11 +528,68 @@
             $('camBtn').textContent = 'تشغيل كاميرا المسح';
         }
 
+        function rowFor(i) {
+            const item = el('div', 'item');
+            item.appendChild(el('div', 'dot ' + i.result, ICONS[i.result] || '?'));
+            const main = el('div', 'main');
+            main.appendChild(el('div', 'nm', i.memberName));
+            const parts = [];
+            if (i.planName) { parts.push(i.planName); }
+            if (i.coachName) { parts.push('المدرب: ' + i.coachName); }
+            main.appendChild(el('div', 'sub', parts.length ? parts.join(' · ') : 'لا يوجد اشتراك'));
+            item.appendChild(main);
+            item.appendChild(el('div', 'time', timeText(i.checkedInAtUtc)));
+            return item;
+        }
+
+        function renderLogs() {
+            const count = function (c) { return items.filter(function (i) { return i.result === c; }).length; };
+            $('cAll').textContent = items.length;
+            $('cGreen').textContent = count('Green');
+            $('cYellow').textContent = count('Yellow');
+            $('cRed').textContent = count('Red');
+            const rows = items.filter(function (i) { return colour === 'All' || i.result === colour; });
+            $('list').innerHTML = '';
+            $('empty').textContent = rows.length ? '' : 'لا توجد زيارات مطابقة';
+            rows.forEach(function (i) { $('list').appendChild(rowFor(i)); });
+        }
+
+        async function loadLogs(quiet) {
+            if (!quiet) { $('list').innerHTML = ''; $('empty').textContent = 'جاري التحميل...'; }
+            try {
+                const res = await fetch('/api/CheckIn/logs?date=' + $('logDate').value, {
+                    headers: { 'Authorization': 'Bearer ' + getToken() }
+                });
+                if (res.status === 401) { await logout(); return; }
+                if (res.status === 403) { $('empty').textContent = 'هذا الحساب لا يملك صلاحية عرض السجل'; return; }
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                items = await res.json();
+                renderLogs();
+            } catch (err) {
+                console.error('logs failed:', err);
+                if (!quiet) { $('empty').textContent = 'تعذر جلب السجل'; }
+            }
+        }
+
+        $('logDate').value = gymToday();
         $('loginBtn').addEventListener('click', login);
-        $('pass').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
-        $('token').addEventListener('keydown', e => { if (e.key === 'Enter') scan($('token').value.trim()); });
-        $('camBtn').addEventListener('click', () => qr && qr.isScanning ? stopCamera() : startCamera());
+        $('pass').addEventListener('keydown', function (e) { if (e.key === 'Enter') login(); });
+        $('token').addEventListener('keydown', function (e) { if (e.key === 'Enter') scan($('token').value.trim()); });
+        $('camBtn').addEventListener('click', function () { return qr && qr.isScanning ? stopCamera() : startCamera(); });
         $('logout').addEventListener('click', logout);
+        $('tabScan').addEventListener('click', function () { showTab('scan'); });
+        $('tabHistory').addEventListener('click', function () { showTab('history'); });
+        $('logDate').addEventListener('change', function () { loadLogs(false); });
+        document.querySelectorAll('.chip').forEach(function (b) {
+            b.addEventListener('click', function () {
+                colour = b.dataset.colour;
+                document.querySelectorAll('.chip').forEach(function (x) { x.classList.toggle('active', x === b); });
+                renderLogs();
+            });
+        });
+        setInterval(function () {
+            if (!document.hidden && getToken() && tab === 'history' && $('logDate').value === gymToday()) { loadLogs(true); }
+        }, 10000);
 
         render();
     </script>

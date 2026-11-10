@@ -7,7 +7,7 @@ namespace GymManagementSystem.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    [Authorize(Roles ="Owner , Coach")]
     public class CheckInController : ControllerBase
     {
         private readonly CheckInService _services;

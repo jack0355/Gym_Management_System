@@ -105,10 +105,19 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     var hasher = scope.ServiceProvider.GetRequiredService<PasswordHasher>();
-    var pass = builder.Configuration["Seed:OwnerPassword"];
-    if (!string.IsNullOrEmpty(pass) && !db.Users.Any(u => u.UserName == "owner"))
+
+    var ownerPass = builder.Configuration["Seed:OwnerPassword"];
+    if (!string.IsNullOrEmpty(ownerPass) && !db.Users.Any(u => u.UserName == "owner"))
     {
-        db.Users.Add(new User { UserName = "owner", PasswordHash = hasher.Hash(pass), Role = StaffRole.Owner });
+        db.Users.Add(new User { UserName = "owner", PasswordHash = hasher.Hash(ownerPass), Role = StaffRole.Owner });
+        db.SaveChanges();
+    }
+
+    
+    var coachPass = builder.Configuration["Seed:CoachPassword"];
+    if (!string.IsNullOrEmpty(coachPass) && !db.Users.Any(u => u.UserName == "coach"))
+    {
+        db.Users.Add(new User { UserName = "coach", PasswordHash = hasher.Hash(coachPass), Role = StaffRole.Coach });
         db.SaveChanges();
     }
 }

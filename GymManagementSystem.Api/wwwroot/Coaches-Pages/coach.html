@@ -1,0 +1,377 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>بوابة المدرب · إدارة النادي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #060911;
+            --surface: #0f172a;
+            --border: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #3b82f6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --radius-lg: 20px;
+            --radius-md: 12px;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: all 0.25s ease;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--bg-base);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 36px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(15, 23, 42, 0.85);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: #60a5fa;
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border: none;
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #fff;
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+            .nav-btn:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            }
+
+        main {
+            flex: 1;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 32px 20px;
+            width: 100%;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+            margin-bottom: 24px;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        input, button {
+            font: inherit;
+            width: 100%;
+            padding: 15px 18px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            background: #0b1329;
+            color: var(--text-main);
+            margin-block-end: 16px;
+        }
+
+            input:focus {
+                outline: none;
+                border-color: var(--primary);
+                box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+            }
+
+        button {
+            background: var(--primary);
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
+        }
+
+            button:hover {
+                background: #2563eb;
+                transform: translateY(-1px);
+            }
+
+        #reader {
+            width: 100%;
+            min-height: 280px;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            margin-block-end: 16px;
+            border: 2px dashed var(--border);
+            background: #050811;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            #reader video {
+                width: 100% !important;
+                height: auto !important;
+                object-fit: cover;
+                border-radius: var(--radius-md);
+            }
+
+            #reader:empty {
+                display: none;
+            }
+
+        .panel {
+            border-radius: var(--radius-lg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px 30px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+        }
+
+            .panel.Green {
+                background: linear-gradient(135deg, #064e3b, #047857);
+                border-color: var(--success);
+            }
+
+            .panel.Yellow {
+                background: linear-gradient(135deg, #78350f, #b45309);
+                border-color: var(--warning);
+            }
+
+            .panel.Red {
+                background: linear-gradient(135deg, #7f1d1d, #b91c1c);
+                border-color: var(--danger);
+            }
+
+        #icon {
+            font-size: 5.5rem;
+            line-height: 1;
+            margin-bottom: 16px;
+        }
+
+        #message {
+            font-size: 2.4rem;
+            font-weight: 900;
+            margin-block-start: 8px;
+        }
+
+        #name {
+            font-size: 1.7rem;
+            font-weight: 700;
+            margin-block-start: 16px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .muted {
+            color: var(--text-muted);
+            font-size: .92rem;
+            text-align: center;
+        }
+
+        .error {
+            color: var(--danger);
+            text-align: center;
+            font-weight: 500;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+            }
+
+            main {
+                padding: 15px;
+            }
+
+            .card {
+                padding: 20px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-area">
+            <span>💪</span> بوابة المدرب
+        </div>
+        <a href="checkin-history.html" class="nav-btn">📊 سجل الحضور</a>
+    </header>
+
+    <main>
+        <section id="login" class="card">
+            <h2 class="card-title" style="text-align:center;">تسجيل دخول المدرب</h2>
+            <input id="user" placeholder="اسم المستخدم" autocomplete="username">
+            <input id="pass" type="password" placeholder="كلمة المرور" autocomplete="current-password">
+            <button id="loginBtn">دخول للنظام</button>
+            <p id="loginError" class="error"></p>
+        </section>
+
+        <div id="scannerWrapper" class="hidden">
+            <section class="card">
+                <h3 class="card-title">📷 مسح رمز الاستجابة السريعة</h3>
+                <div id="reader"></div>
+                <button id="camBtn">تشغيل كاميرا المسح</button>
+                <p id="notice" class="muted"></p>
+                <input id="token" placeholder="أو أدخل أو امسح الرمز يدوياً هنا..." autocomplete="off">
+            </section>
+
+            <div id="result" class="panel">
+                <div id="icon">🛡️</div>
+                <div id="message">جاهز للمسح</div>
+                <div id="name"></div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/html5-qrcode.min.js"></script>
+    <script>
+        const MESSAGES = { Welcome: 'أهلاً بك', PaymentDue: 'يجب الدفع', EndingSoon: 'الاشتراك ينتهي قريباً', NotValid: 'الاشتراك غير صالح', UnknownQr: 'الرمز غير معروف' };
+        const ICONS = { Green: '✓', Yellow: '!', Red: '✕' };
+        const $ = id => document.getElementById(id);
+        const getToken = () => sessionStorage.getItem('jwt');
+        let busy = false, resetTimer, qr = null, lastText = '', lastAt = 0;
+
+        function render() {
+            const loggedIn = !!getToken();
+            $('login').classList.toggle('hidden', loggedIn);
+            $('scannerWrapper').classList.toggle('hidden', !loggedIn);
+            if (loggedIn) { idle(); $('token').focus(); }
+        }
+
+        function idle() {
+            $('result').className = 'panel';
+            $('icon').textContent = '🛡️';
+            $('message').textContent = 'جاهز للمسح';
+            $('name').textContent = '';
+        }
+
+        async function login() {
+            $('loginError').textContent = '';
+            try {
+                const res = await fetch('/api/Auth/Login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userName: $('user').value, password: $('pass').value })
+                });
+                if (!res.ok) { $('loginError').textContent = 'اسم المستخدم أو كلمة المرور غير صحيحة'; return; }
+                sessionStorage.setItem('jwt', (await res.json()).token);
+                $('pass').value = '';
+                render();
+            } catch (err) { $('loginError').textContent = 'تعذر الاتصال بالخادم'; }
+        }
+
+        async function scan(qrToken) {
+            if (busy || !qrToken) return;
+            busy = true;
+            try {
+                const res = await fetch('/api/CheckIn/scan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
+                    body: JSON.stringify({ qrToken })
+                });
+                if (res.status === 401) { sessionStorage.removeItem('jwt'); window.location.reload(); return; }
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                show(await res.json());
+            } catch (err) {
+                $('result').className = 'panel';
+                $('icon').textContent = '⚠';
+                $('message').textContent = 'تعذر الاتصال بالخادم';
+                $('name').textContent = '';
+            } finally {
+                busy = false;
+                $('token').value = '';
+                if (!qr) $('token').focus();
+            }
+        }
+
+        function show(d) {
+            const status = d.result || 'Red';
+            $('result').className = 'panel ' + status;
+            $('icon').textContent = ICONS[status] || '✕';
+            $('message').textContent = MESSAGES[d.messageCode] || 'نتيجة الفحص';
+            $('name').textContent = d.memberName || '';
+
+            if (navigator.vibrate) navigator.vibrate(status === 'Green' ? 80 : [120, 60, 120]);
+            clearTimeout(resetTimer);
+            resetTimer = setTimeout(idle, 10000);
+        }
+
+        function onCode(text) {
+            const now = Date.now();
+            if (text === lastText && now - lastAt < 10000) return;
+            lastText = text; lastAt = now;
+            scan(text.trim());
+        }
+
+        async function startCamera() {
+            $('notice').textContent = '';
+            if (!window.Html5Qrcode) { $('notice').textContent = 'مكتبة الكاميرا غير محملة'; return; }
+            try {
+                if (!qr) qr = new Html5Qrcode('reader');
+                if (qr.isScanning) return;
+                await qr.start({ facingMode: 'environment' }, { fps: 15, qrbox: { width: 250, height: 250 } }, onCode, () => { });
+                $('camBtn').textContent = 'إيقاف الكاميرا';
+            } catch (err) {
+                $('notice').textContent = 'تعذر تشغيل الكاميرا';
+                qr = null;
+            }
+        }
+
+        async function stopCamera() {
+            if (!qr) return;
+            try { if (qr.isScanning) await qr.stop(); await qr.clear(); } catch (e) { }
+            qr = null;
+            $('camBtn').textContent = 'تشغيل كاميرا المسح';
+        }
+
+        $('loginBtn').addEventListener('click', login);
+        $('pass').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+        $('token').addEventListener('keydown', e => { if (e.key === 'Enter') scan($('token').value.trim()); });
+        $('camBtn').addEventListener('click', () => qr && qr.isScanning ? stopCamera() : startCamera());
+
+        render();
+    </script>
+</body>
+</html>

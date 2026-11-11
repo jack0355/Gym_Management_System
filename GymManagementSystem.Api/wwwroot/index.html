@@ -468,6 +468,7 @@
         let busy = false, resetTimer, qr = null, lastText = '', lastAt = 0;
 
         function render() {
+            if (getToken() && roleFromToken(getToken()) === 'Coach') { window.location.href = 'coach.html'; return; }
             const loggedIn = !!getToken();
             $('login').classList.toggle('hidden', loggedIn);
             $('scannerWrapper').classList.toggle('hidden', !loggedIn);
@@ -521,19 +522,31 @@
                 sessionStorage.setItem('jwt', (await res.json()).token);
                 $('pass').value = '';
 
-                const payload = JSON.parse(atob(data.token.split('.')[1]));
-                const role = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
-
-                if (role === 'Coach') {
-                    window.location.href = 'coach.html'; 
-                    return; 
+                const data = await res.json();
+                sessionStorage.setItem('jwt', data.token);
+                $('pass').value = '';
+                if (roleFromToken(data.token) === 'Coach') {
+                    window.location.href = 'coach.html'; return;
                 }
-   
-
-            
                 render();
+
             } catch (err) { $('loginError').textContent = 'تعذر الاتصال بالخادم'; }
         }
+
+        function roleFromToken(token) {
+            try {
+                let b64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+                while (b64.length % 4) { b64 += '='; }
+                const json = decodeURIComponent(atob(b64).split('').map(function (c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                const payload = JSON.parse(json);
+                return payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || payload.role || '';
+            } catch (e) { return ''; }
+        }
+
+
+
 
         async function logout() {
             await stopCamera();

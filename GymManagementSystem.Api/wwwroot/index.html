@@ -467,7 +467,7 @@
         const getToken = () => sessionStorage.getItem('jwt');
         let busy = false, resetTimer, qr = null, lastText = '', lastAt = 0;
 
-       
+
         function roleFromToken(token) {
             if (!token) return '';
             try {
@@ -477,7 +477,7 @@
                     return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
                 }).join(''));
                 const payload = JSON.parse(json);
-               
+
                 return payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || payload.role || '';
             } catch (e) {
                 console.error("Token decode error:", e);
@@ -489,7 +489,7 @@
             const token = getToken();
             const loggedIn = !!token;
 
-           
+
             if (loggedIn && roleFromToken(token).toLowerCase() === 'coach') {
                 window.location.href = 'coach.html';
                 return;
@@ -565,8 +565,42 @@
                 console.error('login failed:', err);
                 $('loginError').textContent = 'تعذر الاتصال بالخادم';
             }
+
         }
 
+        function onCode(text) {
+            const now = Date.now();
+            if (text === lastText && now - lastAt < 10000) return;
+            lastText = text; lastAt = now;
+            scan(text.trim());
+        }
+
+
+
+        async function startCamera() {
+            $('notice').textContent = '';
+            if (!window.Html5Qrcode) { $('notice').textContent = 'مكتبة الكاميرا غير محملة'; return; }
+            try {
+                if (!qr) qr = new Html5Qrcode('reader');
+                if (qr.isScanning) return;
+                await qr.start({ facingMode: 'environment' }, { fps: 15, qrbox: { width: 250, height: 250 } }, onCode, function () { });
+                $('camBtn').textContent = 'إيقاف الكاميرا';
+            } catch (err) {
+                console.error('camera failed:', err);
+                $('notice').textContent = 'تعذر تشغيل الكاميرا';
+                qr = null;
+            }
+        }
+
+
+
+
+        async function stopCamera() {
+            if (!qr) return;
+            try { if (qr.isScanning) await qr.stop(); await qr.clear(); } catch (e) { }
+            qr = null;
+            $('camBtn').textContent = 'تشغيل كاميرا المسح';
+        }
 
         async function logout() {
             await stopCamera();
@@ -574,7 +608,42 @@
             render();
         }
 
-       
+        async function scan(qrToken) {
+            if (busy || !qrToken) return;
+            busy = true;
+            try {
+                const res = await fetch('/api/CheckIn/scan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
+                    body: JSON.stringify({ qrToken: qrToken })
+                });
+                if (res.status === 401) { await logout(); return; }
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                show(await res.json());
+            } catch (err) {
+                console.error('scan failed:', err);
+                $('result').className = 'panel';
+                $('icon').textContent = '⚠';
+                $('message').textContent = 'تعذر الاتصال بالخادم';
+                $('name').textContent = '';
+            } finally {
+                busy = false;
+                $('token').value = '';
+                if (!qr) { $('token').focus(); }
+            }
+        }
+
+        function show(d) {
+            const status = d.result || 'Red';
+            $('result').className = 'panel ' + status;
+            $('icon').textContent = ICONS[status] || '✕';
+            $('message').textContent = MESSAGES[d.messageCode] || 'نتيجة الفحص';
+            $('name').textContent = d.memberName || '';
+            if (navigator.vibrate) { navigator.vibrate(status === 'Green' ? 80 : [120, 60, 120]); }
+            clearTimeout(resetTimer);
+            resetTimer = setTimeout(idle, 10000);
+        }
+
 
         $('loginBtn').addEventListener('click', login);
         $('pass').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });

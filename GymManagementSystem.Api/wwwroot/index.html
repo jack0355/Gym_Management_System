@@ -467,9 +467,34 @@
         const getToken = () => sessionStorage.getItem('jwt');
         let busy = false, resetTimer, qr = null, lastText = '', lastAt = 0;
 
+       
+        function roleFromToken(token) {
+            if (!token) return '';
+            try {
+                let b64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+                while (b64.length % 4) { b64 += '='; }
+                const json = decodeURIComponent(atob(b64).split('').map(function (c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                const payload = JSON.parse(json);
+               
+                return payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || payload.role || '';
+            } catch (e) {
+                console.error("Token decode error:", e);
+                return '';
+            }
+        }
+
         function render() {
-            if (getToken() && roleFromToken(getToken()) === 'Coach') { window.location.href = 'coach.html'; return; }
-            const loggedIn = !!getToken();
+            const token = getToken();
+            const loggedIn = !!token;
+
+           
+            if (loggedIn && roleFromToken(token).toLowerCase() === 'coach') {
+                window.location.href = 'coach.html';
+                return;
+            }
+
             $('login').classList.toggle('hidden', loggedIn);
             $('scannerWrapper').classList.toggle('hidden', !loggedIn);
             $('logout').classList.toggle('hidden', !loggedIn);
@@ -509,30 +534,6 @@
             $('facts').appendChild(row);
         }
 
-        async function login() {
-            $('loginError').textContent = '';
-            try {
-                const res = await fetch('/api/Auth/Login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userName: $('user').value, password: $('pass').value })
-                });
-                if (res.status === 429) { $('loginError').textContent = 'محاولات كثيرة، انتظر دقيقة ثم أعد المحاولة'; return; }
-                if (!res.ok) { $('loginError').textContent = 'اسم المستخدم أو كلمة المرور غير صحيحة'; return; }
-                sessionStorage.setItem('jwt', (await res.json()).token);
-                $('pass').value = '';
-
-                const data = await res.json();
-                sessionStorage.setItem('jwt', data.token);
-                $('pass').value = '';
-                if (roleFromToken(data.token) === 'Coach') {
-                    window.location.href = 'coach.html'; return;
-                }
-                render();
-
-            } catch (err) { $('loginError').textContent = 'تعذر الاتصال بالخادم'; }
-        }
-
         function roleFromToken(token) {
             try {
                 let b64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
@@ -545,7 +546,26 @@
             } catch (e) { return ''; }
         }
 
-
+        async function login() {
+            $('loginError').textContent = '';
+            try {
+                const res = await fetch('/api/Auth/Login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userName: $('user').value, password: $('pass').value })
+                });
+                if (res.status === 429) { $('loginError').textContent = 'محاولات كثيرة، انتظر دقيقة ثم أعد المحاولة'; return; }
+                if (!res.ok) { $('loginError').textContent = 'اسم المستخدم أو كلمة المرور غير صحيحة'; return; }
+                const data = await res.json();
+                sessionStorage.setItem('jwt', data.token);
+                $('pass').value = '';
+                if (roleFromToken(data.token) === 'Coach') { window.location.href = 'coach.html'; return; }
+                render();
+            } catch (err) {
+                console.error('login failed:', err);
+                $('loginError').textContent = 'تعذر الاتصال بالخادم';
+            }
+        }
 
 
         async function logout() {
@@ -554,97 +574,14 @@
             render();
         }
 
-        async function scan(qrToken) {
-            if (busy || !qrToken) return;
-            busy = true;
-            try {
-                const res = await fetch('/api/CheckIn/scan', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
-                    body: JSON.stringify({ qrToken })
-                });
-                if (res.status === 401) { await logout(); return; }
-                if (!res.ok) throw new Error('HTTP ' + res.status);
-                show(await res.json());
-            } catch (err) {
-                console.error('scan failed:', err);
-                $('result').className = 'panel';
-                $('icon').textContent = '⚠';
-                $('message').textContent = 'تعذر الاتصال بالخادم';
-                $('name').textContent = '';
-                $('details').textContent = 'أعد المحاولة، ولا ترفض العضو بسبب هذا الخطأ';
-                $('facts').innerHTML = '';
-            } finally {
-                busy = false;
-                $('token').value = '';
-                if (!qr) $('token').focus();
-            }
-        }
-
-        function show(d) {
-            const status = d.result || 'Red';
-            const fmt = iso => new Date(iso + 'T00:00:00')
-                .toLocaleDateString('ar-SY-u-nu-latn', { day: 'numeric', month: 'long', year: 'numeric' });
-
-            $('result').className = 'panel ' + status;
-            $('icon').textContent = ICONS[status] || '✕';
-            $('message').textContent = MESSAGES[d.messageCode] || 'نتيجة الفحص';
-            $('name').textContent = d.memberName || '';
-            $('facts').innerHTML = '';
-
-            if (d.planName) {
-                $('details').textContent = '';
-                addFact('📋', 'الاشتراك', d.planName);
-                addFact('⏳', 'المدة', d.planDays === 1 ? 'يومي' : d.planDays + ' يوم');
-                addFact('🏋️', 'التدريب', d.withCoach ? 'مع مدرب' : 'بدون مدرب');
-                if (d.coachName) addFact('👤', 'المدرب', d.coachName);
-                addFact('📝', 'البرنامج', d.withProgram ? 'مع برنامج' : 'بدون برنامج');
-                addFact('📅', 'تاريخ البداية', fmt(d.startDate));
-                addFact('🏁', 'تاريخ الانتهاء', fmt(d.endDate));
-                addFact('💵', 'الدفع', d.amountOwed > 0 ? 'المتبقي: ' + d.amountOwed : 'مدفوع بالكامل');
-            } else {
-                $('details').textContent = d.memberName ? 'لا يوجد اشتراك ساري حالياً' : '';
-            }
-
-            if (navigator.vibrate) navigator.vibrate(status === 'Green' ? 80 : [120, 60, 120]);
-            clearTimeout(resetTimer);
-            resetTimer = setTimeout(idle, 10000);
-        }
-
-        function onCode(text) {
-            const now = Date.now();
-            if (text === lastText && now - lastAt < 10000) return;
-            lastText = text; lastAt = now;
-            scan(text.trim());
-        }
-
-        async function startCamera() {
-            $('notice').textContent = '';
-            if (!window.Html5Qrcode) { $('notice').textContent = 'مكتبة الكاميرا غير محملة'; return; }
-            try {
-                if (!qr) qr = new Html5Qrcode('reader');
-                if (qr.isScanning) return;
-                await qr.start({ facingMode: 'environment' }, { fps: 15, qrbox: { width: 250, height: 250 } }, onCode, () => { });
-                $('camBtn').textContent = 'إيقاف الكاميرا';
-            } catch (err) {
-                console.error('camera failed:', err);
-                $('notice').textContent = 'تعذر تشغيل الكاميرا';
-                qr = null;
-            }
-        }
-
-        async function stopCamera() {
-            if (!qr) return;
-            try { if (qr.isScanning) await qr.stop(); await qr.clear(); } catch (e) { }
-            qr = null;
-            $('camBtn').textContent = 'تشغيل كاميرا المسح';
-        }
+       
 
         $('loginBtn').addEventListener('click', login);
         $('pass').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
         $('token').addEventListener('keydown', e => { if (e.key === 'Enter') scan($('token').value.trim()); });
         $('camBtn').addEventListener('click', () => qr && qr.isScanning ? stopCamera() : startCamera());
         $('logout').addEventListener('click', logout);
+
         render();
     </script>
 </body>

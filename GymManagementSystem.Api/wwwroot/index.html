@@ -552,7 +552,7 @@
                 const res = await fetch('/api/Auth/Login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userName: $('user').value, password: $('pass').value })
+                    body: JSON.stringify({ UserName: $('user').value, password: $('pass').value })
                 });
                 if (res.status === 429) { $('loginError').textContent = 'محاولات كثيرة، انتظر دقيقة ثم أعد المحاولة'; return; }
                 if (!res.ok) { $('loginError').textContent = 'اسم المستخدم أو كلمة المرور غير صحيحة'; return; }

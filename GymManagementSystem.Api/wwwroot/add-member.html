@@ -377,12 +377,7 @@
                 const res = await api('/api/Coaches');
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 coaches = await res.json();
-                coaches.forEach(function (c) {
-                    const o = document.createElement('option');
-                    o.value = c.id;
-                    o.textContent = c.name;
-                    $('memberCoach').appendChild(o);
-                });
+                fillCoaches();
             } catch (err) {
                 console.error('coaches failed:', err);
                 $('formError').textContent = 'تعذر تحميل قائمة المدربين';
@@ -390,14 +385,14 @@
         }
 
 
-        function fillcoahces() {
+        function fillCoaches() {
             const gender = $('memberGender').value;
             const select = $('memberCoach');
             select.innerHTML = '';
             select.appendChild(new Option('اختر المدرب', ''));
             coaches
-                .filter(function (c) { return c.gender === gender; })
-                .forEach(function (c) { select.appendChild(new option(c.name, c, id)); });
+                .filter(function (c) { return gender === 'Female' || c.gender === 'Male'; })
+                .forEach(function (c) { select.appendChild(new Option(c.name, c.id)); });
         }
 
         async function explain(name, res) {
@@ -500,7 +495,6 @@
             }
 
 
-            $('memberGender').addEventListener('Change', fillcoahces);
             $('saveBtn').disabled = true;
             try {
                 if (!reg.member) {
@@ -563,6 +557,7 @@
 
         $('memberPlan').addEventListener('change', updateForm);
         $('memberProgram').addEventListener('change', updateForm);
+        $('memberGender').addEventListener('change', fillCoaches);
         $('saveBtn').addEventListener('click', register);
         $('resetBtn').addEventListener('click', reset);
         $('againBtn').addEventListener('click', reset);

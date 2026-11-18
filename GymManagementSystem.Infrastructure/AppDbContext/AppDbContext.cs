@@ -23,6 +23,8 @@ namespace GymManagementSystem.Infrastructure
             // Notes From me : Fast Scan Look up , what i mean --> databases refuses duplicated tokens
             modelBuilder.Entity<Member>().HasIndex(m => m.QrToken).IsUnique();
 
+            //Duplicated FullName and Phone Number
+            modelBuilder.Entity<Member>().HasIndex(m => new { m.FullName, m.Phone }).IsUnique();
 
             //find a username , so we avoid two player or members have the same username 
             modelBuilder.Entity<User>().HasIndex(u => u.UserName).IsUnique();

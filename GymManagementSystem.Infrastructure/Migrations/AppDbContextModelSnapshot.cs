@@ -112,6 +112,9 @@ namespace GymManagementSystem.Infrastructure.Migrations
                     b.HasIndex("QrToken")
                         .IsUnique();
 
+                    b.HasIndex("FullName", "Phone")
+                        .IsUnique();
+
                     b.ToTable("Members");
                 });
 

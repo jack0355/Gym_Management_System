@@ -6,6 +6,7 @@ using GymManagementSystem.Core.Models.Responses;
 using GymManagementSystem.Core.Rules;
 using GymManagementSystem.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace GymManagementSystem.Api.Models;
 
@@ -37,7 +38,16 @@ public class MemberService
         };
 
         _db.Members.Add(member);
-        await _db.SaveChangesAsync();
+
+
+        try
+        {
+            await _db.SaveChangesAsync();
+        }
+        catch (DbUpdateException ex) when (ex.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation })
+        {
+            return null;
+        }
 
 
         return new CreateMemberResponse(member.Id, member.FullName, member.QrToken);

@@ -38,7 +38,8 @@ namespace GymManagementSystem.Infrastructure.Services
                 if (coachId is null) return (null, "Coach is required for this plan");
                 coach = await _db.Coaches.FirstOrDefaultAsync(c => c.Id == coachId && c.IsActive);
                 if (coach is null) return (null, "Unknown Coach");
-
+                if (member.Gender == Gender.Male && coach.gender == Gender.Female)
+                    return (null, "A female coach cannot train a male member");
 
             }
 
